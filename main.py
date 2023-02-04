@@ -369,7 +369,7 @@ class main_gpt(cmd.Cmd):
             from os import system
 
             system((raw[2:]).strip())
-        elif raw:
+        elif bool(raw):
             args.prompt = raw
             rp = gpt3.main()
             if rp[0]:
