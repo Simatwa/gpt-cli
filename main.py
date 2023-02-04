@@ -59,7 +59,7 @@ class config_handler:
         parser.add_argument(
             "-v", "--version", action="version", version=f"%(prog)s v{__version__}"
         )
-        parser.add_argument("prompt", help="Message to be send.", nargs="*")
+        parser.add_argument('message', help="Message to be send.", nargs="*")
         models = [
             "text-davinci-001",
             "text-davinci-002",
@@ -175,9 +175,10 @@ class config_handler:
             choices=self.colors,
         )
         parser.add_argument(
-            "--settings",
+            "--prompt",
             help="Customizes the prompt display",
             default=f"┌─[{getlogin().capitalize()}@chatgpt3]─(%H:%M:%S)",
+            dest='settings',
             nargs="*",
         )
         parser.add_argument(
@@ -247,7 +248,7 @@ class gpt3_interactor:
     def partial_filters(self, sample: dict):
         """Loads partial configurations parsed"""
         from_args = {
-            "prompt": args.prompt,
+            "prompt": args.message,
             "model": args.model,
             "temperature": args.temperature,
             "max_tokens": args.max_tokens,
@@ -263,7 +264,7 @@ class gpt3_interactor:
     def main(self):
         """Main Function"""
         try:
-            self.params["prompt"] = args.prompt
+            self.params["prompt"] = args.message
             resp = openai.Completion.create(**self.params)
         except Exception as e:
             rp = (False, e)
@@ -371,7 +372,7 @@ class main_gpt(cmd.Cmd):
 
             system((raw[2:]).strip())
         elif bool(raw):
-            args.prompt = raw
+            args.message = raw
             rp = gpt3.main()
             if rp[0]:
                 out(rp[1]["text"])
@@ -417,8 +418,8 @@ class main_gpt(cmd.Cmd):
 if __name__ == "__main__":
     try:
         run = main_gpt()
-        if args.prompt:
-            run.default(" ".join(args.prompt))
+        if args.message:
+            run.default(" ".join(args.message))
         run.cmdloop()
     except (KeyboardInterrupt, EOFError):
         exit(logging.info("Stopping program"))
