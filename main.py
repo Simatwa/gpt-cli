@@ -380,6 +380,7 @@ class main_gpt(cmd.Cmd):
 
     def do_prompt(self, line):
         """Modify prompts"""
+        self.prompt_disp=line
         self.prompt = time_now_format(line)
 
     def do_font_color(self, line):
