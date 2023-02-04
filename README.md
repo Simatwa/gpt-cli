@@ -8,13 +8,21 @@
 <a href="#"><img src="https://img.shields.io/static/v1?label=Coverage&message=20%&color=red" alt="Coverage"/></a>
 </p>
 
-CLI tool for interacting with chatgpt3.
+CLI tool for interacting with [Chatgpt-3](https://openai.com).
 
-![screenshot](assets/Screenshot.png)
+![screenshot](assets/Screenshot1.png)
+
+## [Independencies](requirements.txt)
+
+* [Openai](https://github.com/openai/)
+* [Numpy](https://github.com/numpy/numpy)
+* [Colorama](https://github.com/tartley/colorama)
 
 ## Installation
 
-Run the following commands at the `terminal` to get started.
+### Linux
+
+Running the following commands at the `terminal` will get you ready.
 
 ```sh
 $ git clone https://github.com/Simatwa/gpt-cli.git
@@ -23,14 +31,67 @@ $ bash install.sh
  #or
 $ sudo bash install.sh
 ```
+### Windows
+
+Executables will be available soon.
 
 ## Usage 
+
 `gpt-cli -k <gpt-api-key> <Your query>`
 
-e.g
+* For instance :
 
 ```sh
 $ gpt-cli xxxxxxxxxxxxxxxxxx How to scan for SMB vulnerability using NMAP?
 ```
 
-- For more info run `gpt-cli -h`.
+```
+Special character is `:`  
+[#] Special commands have a predefined function as shown:
+
+╒═════════════════╤══════════════════════════════════════════════════════╕
+│ Command         │ Function                                             │
+╞═════════════════╪══════════════════════════════════════════════════════╡
+│ :check          │ Gives a shallow display of the response from the API │
+├─────────────────┼──────────────────────────────────────────────────────┤
+│ :set            │ Configures api request parameters                    │
+├─────────────────┼──────────────────────────────────────────────────────┤
+│ :response       │ Shows whole feedback from the last request           │
+├─────────────────┼──────────────────────────────────────────────────────┤
+│ :configurations │ Shows api request parameters                         │
+├─────────────────┼──────────────────────────────────────────────────────┤
+│ :help           │ Outputs this help info                               │
+╘═════════════════╧══════════════════════════════════════════════════════╛
+
+[#] Inputs without special character interacts with the CHAT-GPT3 except:
+
+    (a). font_color : modifies font-color
+          e.g 'font_color input red'
+
+    (b). background_color : modifies background_color
+          e.g 'background_color cyan'
+
+[#] Use single `:` (full-colon) to interact with the special commands
+      e.g ':configurations'
+
+[#] Use double `::` (full-colon) to interact with the system commands
+      e.g '::ifconfig'
+
+[NOTE] special characters must occupy the first indexes
+
+[#] Modify the chat-gpt parameters by introducing `:set` command
+  e.g ':set model curie'
+  ```
+
+  For more info run `gpt-cli -h`.
+
+  ## Motive
+
+As a terminal `lover` I used to find it uncomfortable to keep shifting from one window to next in oreder to access gpt, the rest is here.
+
+## Contributions
+
+- Anyone is free to [fork](fork), submit an [issue]() without any **guideline** and suggestig a [pull request](pull).
+## Acknowledgements
+
+ 1. [remo7777](https://github.com/remo7777/T-Header)
