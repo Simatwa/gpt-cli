@@ -165,9 +165,6 @@ class config_handler:
             "--response", help="Holds the last response from remote-API", required=False
         )
         parser.add_argument(
-            "--configurations", help="Holds the current configurations", required=False
-        )
-        parser.add_argument(
             "--settings", help="Holds the current settings parsed", required=False
         )
         return parser.parse_args()
@@ -206,7 +203,6 @@ class gpt3_interactor:
             self.params.pop("api_key")
         if not openai.api_key:
             self.get_api_key()
-        args.configurations = self.params
 
     def get_api_key(self):
         openai.api_key = args.key
@@ -255,7 +251,7 @@ class gpt3_interactor:
         finally:
             return rp
 
-
+gpt3=gpt3_interactor()
 class local_interactor:
     def __init__(self):
         self.special_input = {
@@ -281,7 +277,7 @@ Special character is `:`
    Other special commands include:
       (a). font_color : modifies font-color
           e.g font_color input red
-      (b). background_color : modifies backgroun_color
+      (b). background_color : modifies background_color
           e.g background_color cyan
 
 
@@ -291,7 +287,7 @@ Special character is `:`
         return json.dumps(args.response, indent=4)
 
     def configurations(self):
-        return json.dumps(args.configurations, indent=4)
+        return json.dumps(gpt3.params, indent=4)
 
     def edit_config(self):
         new_conf = args.settings.split(" ")
@@ -306,7 +302,7 @@ Special character is `:`
         }
         if new_conf[1] in tuple(reference.keys()):
             try:
-                gpt3_interactor().params[new_conf[1]] = reference[new_conf[1]](
+                gpt3.params[new_conf[1]] = reference[new_conf[1]](
                     new_conf[2]
                 )
                 return "ok"
@@ -337,7 +333,6 @@ class main_gpt(cmd.Cmd):
         print(self.bcolor_dict[args.background_color] + self.color_dict[args.input_color])
 
     def default(self, raw):
-        start = gpt3_interactor()
         interactive = local_interactor()
         out = lambda b: print(self.color_dict[args.output_color] + b + Fore.RESET)
         if raw.split(" ")[0] in tuple(interactive.special_input.keys()):
@@ -349,7 +344,7 @@ class main_gpt(cmd.Cmd):
             system((raw[2:]).strip())
         elif raw:
             args.prompt = raw
-            rp = start.main()
+            rp = gpt3.main()
             if rp[0]:
                 out(rp[1]["text"])
             else:
