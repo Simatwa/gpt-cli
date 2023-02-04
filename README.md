@@ -87,11 +87,11 @@ Special character is `:`
 
   ## Motive
 
-As a terminal `lover` I used to find it uncomfortable to keep shifting from one window to next in oreder to access gpt, the rest is here.
+As a terminal `lover` I used to find it uncomfortable to keep shifting from one window to next in order to access gpt, the rest is here.
 
 ## Contributions
 
-- Anyone is free to [fork](fork), submit an [issue]() without any **guideline** and suggestig a [pull request](pull).
+- Anyone is free to [fork](https://github.com/Simatwa/gpt-cli/fork), submit an [issues](https://github.com/Simatwa/gpt-cli/issues) without any **guideline** and suggesting a [pull request](https://github.com/Simatwa/gpt-cli/pulls).
 ## Acknowledgements
 
  1. [remo7777](https://github.com/remo7777/T-Header)
