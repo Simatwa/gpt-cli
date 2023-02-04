@@ -1,7 +1,8 @@
 #!/usr/bin/python
-__version__ = "1.0.0"
+__version__ = "1.0"
 __author__ = "Smartwa Caleb"
 from colorama import Fore, Back
+from os import getlogin
 
 
 class config_handler:
@@ -176,7 +177,7 @@ class config_handler:
         parser.add_argument(
             "--settings",
             help="Customizes the prompt display",
-            default="(%H:%M:%S)chatgpt3>>",
+            default=f"┌─[{getlogin().capitalize()}@chatgpt3]─(%H:%M:%S)",
             nargs="*",
         )
         parser.add_argument(
@@ -343,7 +344,7 @@ Special character is `:`
             return rp
 
 time_now_format = (
-    lambda v: f"{config_h.color_dict[args.prompt_color]}{datetime.today().strftime(v)}{config_h.color_dict['reset']}"
+    lambda v:str(f"{config_h.color_dict[args.prompt_color]}{datetime.today().strftime(v)}{config_h.color_dict[args.input_color]}\r\n└──╼ ❯❯❯")
 )
 class main_gpt(cmd.Cmd):
     prompt_disp = (
@@ -392,12 +393,14 @@ class main_gpt(cmd.Cmd):
                 args.input_color = line[1]
             elif line[0] in ("output"):
                 args.output_color = line[1]
+                
             else:
                 args.prompt_color = line[1]
                 self.do_prompt(self.prompt_disp)
-            self.apply_color()
         except Exception as e:
             logging.error(str(e))
+        else:
+            self.apply_color()
 
     def do_background_color(self, line):
         """Sets background-color"""
