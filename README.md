@@ -36,6 +36,9 @@ $ sudo bash install.sh
 Executables will be available soon.
 
 ## Usage 
+### Prerequisites
+
+ 1. [GPT-api-key](https://platform.openai.com/account/api-keys)
 
 `gpt-cli -k <gpt-api-key> <Your query>`
 
