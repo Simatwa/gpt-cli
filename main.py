@@ -59,7 +59,7 @@ class config_handler:
         parser.add_argument(
             "-v", "--version", action="version", version=f"%(prog)s v{__version__}"
         )
-        parser.add_argument('message', help="Message to be send.", nargs="*")
+        parser.add_argument("message", help="Message to be send.", nargs="*")
         models = [
             "text-davinci-001",
             "text-davinci-002",
@@ -178,7 +178,7 @@ class config_handler:
             "--prompt",
             help="Customizes the prompt display",
             default=f"┌─[{getlogin().capitalize()}@chatgpt3]─(%H:%M:%S)",
-            dest='settings',
+            dest="settings",
             nargs="*",
         )
         parser.add_argument(
@@ -210,8 +210,10 @@ from sys import exit
 import openai
 import json
 import cmd
+from re import sub
 from datetime import datetime
 from colorama import Fore
+from os import system
 
 
 class gpt3_interactor:
@@ -291,22 +293,43 @@ class local_interactor:
 
     def help(self):
         return f"""
+gpt-cli v{__version__} 
+
 Special character is `:`  
-   [#] Special commands have a predefined function in this script. 
-   [#] Special commands include : {list(self.special_input.keys())}
-   [#] Inputs without special character interacts with the CHAT-GPT3
-       Use single `:` (full-colon) to interact with the special commands
-         e.g :configurations
-       Use double `:` (full-colon) to interact with the system commands
-         e.g ::ifconfig
-   [NOTE] special characters must occupy the first indexes
-   Other special commands include:
-      (a). font_color : modifies font-color
-          e.g font_color input red
-      (b). background_color : modifies background_color
-          e.g background_color cyan
+[#] Special commands have a predefined function as shown:
 
+╒═════════════════╤══════════════════════════════════════════════════════╕
+│ Command         │ Function                                             │
+╞═════════════════╪══════════════════════════════════════════════════════╡
+│ :check          │ Gives a shallow display of the response from the API │
+├─────────────────┼──────────────────────────────────────────────────────┤
+│ :set            │ Configures api request parameters                    │
+├─────────────────┼──────────────────────────────────────────────────────┤
+│ :response       │ Shows whole feedback from the last request           │
+├─────────────────┼──────────────────────────────────────────────────────┤
+│ :configurations │ Shows api request parameters                         │
+├─────────────────┼──────────────────────────────────────────────────────┤
+│ :help           │ Outputs this help info                               │
+╘═════════════════╧══════════════════════════════════════════════════════╛
 
+[#] Inputs without special character interacts with the CHAT-GPT3 except:
+
+    (a). font_color : modifies font-color
+          e.g 'font_color input red'
+
+    (b). background_color : modifies background_color
+          e.g 'background_color cyan'
+
+[#] Use single `:` (full-colon) to interact with the special commands
+      e.g ':configurations'
+
+[#] Use double `::` (full-colon) to interact with the system commands
+      e.g '::ifconfig'
+
+[NOTE] special characters must occupy the first indexes
+
+[#] Modify the chat-gpt parameters by introducing `:set` command
+  e.g ':set model curie'
         """
 
     def response(self):
@@ -333,7 +356,7 @@ Special character is `:`
             except Exception as e:
                 logging.error(e)
         else:
-            logging.error(f"{new_conf[1]} NOT in {list(reference.keys())}")
+            logging.error(f"'{new_conf[1]}' NOT in {list(reference.keys())}")
 
     def check(self):
         if isinstance(args.response, dict):
@@ -344,9 +367,12 @@ Special character is `:`
                 pass
             return rp
 
-time_now_format = (
-    lambda v:str(f"{config_h.color_dict[args.prompt_color]}{datetime.today().strftime(v)}{config_h.color_dict[args.input_color]}\r\n└──╼ ❯❯❯")
+
+time_now_format = lambda v: str(
+    f"{config_h.color_dict[args.prompt_color]}{datetime.today().strftime(v)}{config_h.color_dict[args.input_color]}\r\n└──╼ ❯❯❯"
 )
+
+
 class main_gpt(cmd.Cmd):
     prompt_disp = (
         " ".join(args.settings) if isinstance(args.settings, list) else args.settings
@@ -368,21 +394,19 @@ class main_gpt(cmd.Cmd):
             args.settings = raw
             out(str(interactive.run(raw.split(" ")[0])))
         elif raw[0:2] == "::":
-            from os import system
-
             system((raw[2:]).strip())
         elif bool(raw):
             args.message = raw
             rp = gpt3.main()
             if rp[0]:
-                out(rp[1]["text"])
+                out(sub("\n\n", "\n", rp[1]["text"], 1))
             else:
                 logging.error(str(rp[1]))
         self.do_prompt(self.prompt_disp)
 
     def do_prompt(self, line):
         """Modify prompts"""
-        self.prompt_disp=line
+        self.prompt_disp = line
         self.prompt = time_now_format(line)
 
     def do_font_color(self, line):
@@ -394,7 +418,7 @@ class main_gpt(cmd.Cmd):
                 args.input_color = line[1]
             elif line[0] in ("output"):
                 args.output_color = line[1]
-                
+
             else:
                 args.prompt_color = line[1]
                 self.do_prompt(self.prompt_disp)
