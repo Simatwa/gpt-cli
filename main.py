@@ -37,7 +37,8 @@ class config_handler:
             "reset": Back.RESET,
         }
         self.float_range = self.generate_floats()
-        self.colors=list(self.color_dict.keys())
+        self.colors = list(self.color_dict.keys())
+
     def generate_floats(self):
         """Generates floats in range (0-2)"""
         from numpy import arange
@@ -51,7 +52,9 @@ class config_handler:
         """Gets args parsed"""
         import argparse
 
-        parser = argparse.ArgumentParser(description="Interact with GPT3 at the terminal")
+        parser = argparse.ArgumentParser(
+            description="Interact with GPT3 at the terminal"
+        )
         parser.add_argument(
             "-v", "--version", action="version", version=f"%(prog)s v{__version__}"
         )
@@ -140,7 +143,7 @@ class config_handler:
             help="Font color for inputs",
             default="reset",
             dest="input_color",
-            metavar='[cyan|green|yellow|red]',
+            metavar="[cyan|green|yellow|red]",
             choices=self.colors,
         )
         parser.add_argument(
@@ -149,7 +152,7 @@ class config_handler:
             help="Font color for outputs",
             default="cyan",
             dest="output_color",
-            metavar='[cyan|green|yellow|red]',
+            metavar="[cyan|green|yellow|red]",
             choices=self.colors,
         )
         parser.add_argument(
@@ -158,14 +161,29 @@ class config_handler:
             help="Console's background-color",
             default="reset",
             dest="background_color",
-            metavar='[blue,magenta,black,reset]',
+            metavar="[blue,magenta,black,reset]",
             choices=self.colors,
         )
         parser.add_argument(
-            "--response", help="Holds the last response from remote-API", required=False
+            "-pc",
+            "--prompt-color",
+            help="Prompt's display color",
+            default="yellow",
+            dest="prompt_color",
+            metavar="[cyan|green|yellow|red]",
+            choices=self.colors,
         )
         parser.add_argument(
-            "--settings", help="Holds the current settings parsed", required=False
+            "--settings",
+            help="Customizes the prompt display",
+            default="(%H:%M:%S)chatgpt3>>",
+            nargs="*",
+        )
+        parser.add_argument(
+            "--response",
+            help="Holds the last response from remote-API",
+            required=False,
+            action="store_true",
         )
         return parser.parse_args()
 
@@ -184,10 +202,13 @@ class config_handler:
         return self.get_args(), self.set_log()
 
 
-args, logging = config_handler().main()
+config_h = config_handler()
+args, logging = config_h.main()
 from sys import exit
 import openai
 import json
+import cmd
+from datetime import datetime
 from colorama import Fore
 
 
@@ -251,7 +272,10 @@ class gpt3_interactor:
         finally:
             return rp
 
-gpt3=gpt3_interactor()
+
+gpt3 = gpt3_interactor()
+
+
 class local_interactor:
     def __init__(self):
         self.special_input = {
@@ -302,9 +326,7 @@ Special character is `:`
         }
         if new_conf[1] in tuple(reference.keys()):
             try:
-                gpt3.params[new_conf[1]] = reference[new_conf[1]](
-                    new_conf[2]
-                )
+                gpt3.params[new_conf[1]] = reference[new_conf[1]](new_conf[2])
                 return "ok"
             except Exception as e:
                 logging.error(e)
@@ -320,17 +342,22 @@ Special character is `:`
                 pass
             return rp
 
-
-import cmd
-
-
+time_now_format = (
+    lambda v: f"{config_h.color_dict[args.prompt_color]}{datetime.today().strftime(v)}{config_h.color_dict['reset']}"
+)
 class main_gpt(cmd.Cmd):
-    prompt = "chat-gpt3>>"
+    prompt_disp = (
+        " ".join(args.settings) if isinstance(args.settings, list) else args.settings
+    )
+    prompt = time_now_format(prompt_disp)
     config_handler = config_handler()
     color_dict = config_handler.color_dict
     bcolor_dict = config_handler.bcolor_dict
+
     def apply_color(self):
-        print(self.bcolor_dict[args.background_color] + self.color_dict[args.input_color])
+        print(
+            self.bcolor_dict[args.background_color] + self.color_dict[args.input_color]
+        )
 
     def default(self, raw):
         interactive = local_interactor()
@@ -349,20 +376,24 @@ class main_gpt(cmd.Cmd):
                 out(rp[1]["text"])
             else:
                 logging.error(str(rp[1]))
+        self.do_prompt(self.prompt_disp)
 
     def do_prompt(self, line):
         """Modify prompts"""
-        self.prompt = line
+        self.prompt = time_now_format(line)
 
     def do_font_color(self, line):
         """Sets font color"""
         line = line.lower().split(" ")
         try:
             self.color_dict[line[1]]
-            if line[0] in ('input'):
-                args.input_color=line[1]
+            if line[0] in ("input"):
+                args.input_color = line[1]
+            elif line[0] in ("output"):
+                args.output_color = line[1]
             else:
-                args.output_color=line[1]
+                args.prompt_color = line[1]
+                self.do_prompt(self.prompt_disp)
             self.apply_color()
         except Exception as e:
             logging.error(str(e))
