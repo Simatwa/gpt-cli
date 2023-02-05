@@ -41,7 +41,7 @@ Executables will be available soon.
 
 ## Usage 
 
-Run`$ gpt-cli -k <gpt-api-key> <Your query>`
+Run `$ gpt-cli -k <gpt-api-key> <Your query>` at the terminal.
 
 * For instance :
 
