@@ -46,7 +46,7 @@ Run `$ gpt-cli -k <gpt-api-key> <Your query>` at the terminal.
 * For instance :
 
 ```sh
-$ gpt-cli xxxxxxxxxxxxxxxxxx How to scan for SMB vulnerability using NMAP?
+$ gpt-cli -k xxxxxxxxxxxxxxxxxx How to scan for SMB vulnerability using NMAP?
 ```
 
 ```
