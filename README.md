@@ -94,7 +94,7 @@ As a terminal `lover` I used to find it uncomfortable to keep shifting from one 
 
 ## Contributions
 
-- Anyone is free to [fork](https://github.com/Simatwa/gpt-cli/fork), submit an [issues](https://github.com/Simatwa/gpt-cli/issues) without any **guideline** and suggesting a [pull request](https://github.com/Simatwa/gpt-cli/pulls).
+- Anyone is free to [fork](https://github.com/Simatwa/gpt-cli/fork), submit an [issue](https://github.com/Simatwa/gpt-cli/issues) without any **guideline** and suggesting a [pull request](https://github.com/Simatwa/gpt-cli/pulls).
 ## Acknowledgements
 
  1. [remo7777](https://github.com/remo7777/T-Header)
