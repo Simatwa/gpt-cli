@@ -18,6 +18,10 @@ CLI tool for interacting with [Chatgpt-3](https://openai.com).
 * [Numpy](https://github.com/numpy/numpy)
 * [Colorama](https://github.com/tartley/colorama)
 
+### Prerequisites
+
+ - [x] [GPT-api-key](https://platform.openai.com/account/api-keys)
+
 ## Installation
 
 ### Linux
@@ -36,11 +40,8 @@ $ sudo bash install.sh
 Executables will be available soon.
 
 ## Usage 
-### Prerequisites
 
- 1. [GPT-api-key](https://platform.openai.com/account/api-keys)
-
-`gpt-cli -k <gpt-api-key> <Your query>`
+Run`$ gpt-cli -k <gpt-api-key> <Your query>`
 
 * For instance :
 
