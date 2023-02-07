@@ -14,7 +14,7 @@ CLI tool for interacting with [Chatgpt-3](https://openai.com).
 
 ## [Independencies](requirements.txt)
 
-* [Openai](https://github.com/openai/)
+* [Openai](https://github.com/openai/openai-python)
 * [Numpy](https://github.com/numpy/numpy)
 * [Colorama](https://github.com/tartley/colorama)
 
