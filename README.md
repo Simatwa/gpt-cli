@@ -91,11 +91,18 @@ Special character is `:`
 
   ## Motive
 
-As a terminal `lover` I used to find it uncomfortable to keep shifting from one window to next in order to access gpt even after trying out the [gpt-login](https://github.com/Simatwa/gpt-login), the rest is here.
+As a `terminal guy` I used to find it uncomfortable to keep shifting from one window to next in order to access gpt even after trying out the [gpt-login](https://github.com/Simatwa/gpt-login), the rest is here.
 
 ## Contributions
 
 - Anyone is free to [fork](https://github.com/Simatwa/gpt-cli/fork), submit an [issue](https://github.com/Simatwa/gpt-cli/issues) without any **guideline** and suggesting a [pull request](https://github.com/Simatwa/gpt-cli/pulls).
+
+### ToDo
+
+- [ ] Use dialogue 
+- [ ] Send text from a file
+- [ ] Busy bar
+
 ## Acknowledgements
 
  1. [remo7777](https://github.com/remo7777/T-Header)
