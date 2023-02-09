@@ -429,7 +429,6 @@ class main_gpt(cmd.Cmd):
 
     def do_background_color(self, line):
         """Sets background-color"""
-        from colorama import Back
 
         try:
             self.bcolor_dict[line.lower()]
