@@ -195,7 +195,7 @@ class config_handler:
 
         logging.basicConfig(
             format="%(levelname)s - %(message)s : %(asctime)s",
-            datefmt="%d-%b-%Y %H:%M:%Y",
+            datefmt="%d-%b-%Y %H:%M:%S",
             level=logging.INFO,
         )
         return logging
