@@ -206,7 +206,7 @@ class config_handler:
 
 config_h = config_handler()
 args, logging = config_h.main()
-from sys import exit
+from sys import exit,stderr
 import openai
 import json
 import cmd
@@ -388,6 +388,8 @@ class main_gpt(cmd.Cmd):
         )
 
     def default(self, raw):
+        if not bool(raw):
+        	return	
         interactive = local_interactor()
         out = lambda b: print(self.color_dict[args.output_color] + b + Fore.RESET)
         if raw.split(" ")[0] in tuple(interactive.special_input.keys()):
