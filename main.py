@@ -206,13 +206,12 @@ class config_handler:
 
 config_h = config_handler()
 args, logging = config_h.main()
-from sys import exit,stderr
+from sys import exit, stderr
 import openai
 import json
 import cmd
 from re import sub
 from datetime import datetime
-from colorama import Fore
 from os import system
 
 
@@ -389,7 +388,7 @@ class main_gpt(cmd.Cmd):
 
     def default(self, raw):
         if not bool(raw):
-        	return	
+            return
         interactive = local_interactor()
         out = lambda b: print(self.color_dict[args.output_color] + b + Fore.RESET)
         if raw.split(" ")[0] in tuple(interactive.special_input.keys()):
