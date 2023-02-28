@@ -1,8 +1,8 @@
 #!/usr/bin/python
-__version__ = "1.0"
+__version__ = "1.1.0"
 __author__ = "Smartwa Caleb"
 from colorama import Fore, Back
-from os import getlogin
+from os import getlogin, getcwd, path
 
 
 class config_handler:
@@ -187,6 +187,41 @@ class config_handler:
             required=False,
             action="store_true",
         )
+        parser.add_argument(
+            "-o",
+            "--output",
+            help="Filepath for saving the chats - default [$PWD/GPT-CLI-convo.txt]",
+            default=path.join(getcwd(), "GPT-CLI-convo.txt"),
+        )
+        parser.add_argument(
+            "-pp",
+            "--prompt-prefix",
+            help="Text to append before saving each prompt - default [>>timestamp]",
+            dest="prompt_prefix",
+            metavar="prefix",
+            default=">>(%d-%b %H:%M:%S) : ",
+        )
+        parser.add_argument(
+            "-rp",
+            "--response-prefix",
+            help="Text to append before saving each response - default [None]",
+            dest="response_prefix",
+            metavar="prefix",
+            default="",
+        )
+        parser.add_argument(
+            "--new-record",
+            help="Override previous chats under the filepath",
+            action="store_true",
+            dest="new_record",
+        )
+        parser.add_argument(
+            "--disable-recording",
+            dest="disable_recording",
+            help="Disable saving prompts and responses",
+            action="store_true",
+        )
+
         return parser.parse_args()
 
     def set_log(self):
@@ -212,7 +247,10 @@ import json
 import cmd
 from re import sub
 from datetime import datetime
-from os import system
+from os import system, remove
+from threading import Thread as thr
+
+date_stamp = lambda text: datetime.today().strftime(text)
 
 
 class gpt3_interactor:
@@ -368,8 +406,34 @@ Special character is `:`
 
 
 time_now_format = lambda v: str(
-    f"{config_h.color_dict[args.prompt_color]}{datetime.today().strftime(v)}{config_h.color_dict[args.input_color]}\r\n└──╼ ❯❯❯"
+    f"{config_h.color_dict[args.prompt_color]}{date_stamp(v)}{config_h.color_dict[args.input_color]}\r\n└──╼ ❯❯❯"
 )
+
+
+class tracker:
+    """Keeps track of the prompts & responses"""
+
+    def __init__(self, filepath: str):
+        self.filepath = filepath
+        self.feedback = None
+        self.failed_to_record = False
+
+    def save_record(self) -> None:
+        """Writes the prompt and response in a file"""
+        info_to_write = f"\n\n{date_stamp(args.prompt_prefix)}{args.message}\n\n{date_stamp(args.response_prefix)}{self.feedback}"
+        try:
+            with open(self.filepath, "a") as fp:
+                fp.write(info_to_write)
+        except Exception as e:
+            logging.error(f"Failed to keep record - {e}")
+            self.failed_to_record = True
+
+    def main(self, response: str) -> None:
+        """Main method"""
+        if any([self.failed_to_record, args.disable_recording]):
+            return
+        self.feedback = sub("\n", "", response, 1)
+        thr(target=self.save_record).start()
 
 
 class main_gpt(cmd.Cmd):
@@ -400,7 +464,9 @@ class main_gpt(cmd.Cmd):
             args.message = raw
             rp = gpt3.main()
             if rp[0]:
-                out(sub("\n\n", "\n", rp[1]["text"], 1))
+                feedback = sub("\n\n", "\n", rp[1]["text"], 1)
+                out(feedback)
+                record_keeper.main(feedback)
             else:
                 logging.error(str(rp[1]))
         self.do_prompt(self.prompt_disp)
@@ -424,7 +490,7 @@ class main_gpt(cmd.Cmd):
                 args.prompt_color = line[1]
                 self.do_prompt(self.prompt_disp)
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
         else:
             self.apply_color()
 
@@ -436,11 +502,14 @@ class main_gpt(cmd.Cmd):
             args.background_color = line.lower()
             self.apply_color()
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
 
 
 if __name__ == "__main__":
+    record_keeper = tracker(args.output)
     try:
+        if args.new_record and path.isfile(args.output):
+            remove(args.output)
         run = main_gpt()
         if args.message:
             run.default(" ".join(args.message))
@@ -448,4 +517,4 @@ if __name__ == "__main__":
     except (KeyboardInterrupt, EOFError):
         exit(logging.info("Stopping program"))
     except Exception as e:
-        logging.error(str(e))
+        logging.exception(e)

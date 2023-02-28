@@ -1,0 +1,45 @@
+
+
+>>(28-Feb 20:26:17):Hello there
+
+It's nice to meet you! What brings you here?
+
+>>(28-Feb 20:30:03):Teach me Python
+
+Python is an easy-to-learn, powerful programming language. It has efficient high-level data structures and a simple but effective approach to object-oriented programming. Here are some resources to help you get started with Python:
+
+1. Learn Python The Hard Way: This is an online tutorial that teaches Python from the ground up. It is an excellent resource for beginners who want to learn the basics of Python.
+
+2. Python Tutorials: This website provides tutorials for all sorts of topics related to Python. It is a great resource for anyone looking to learn more about the language.
+
+3. Codecademy Python Course: This is a free online course that teaches Python from the basics. It is a great way to get started with the language and learn the fundamentals.
+
+4. Dive Into Python: This is an online book that takes an in-depth look at Python. It is a great resource for intermediate and advanced programmers who want to learn more about the language.
+
+>>(28-Feb 20:31:17):Write a https connect proxy in Python that can be used in a production environment
+
+import socket
+import ssl
+import logging
+
+logging.basicConfig(level=logging.INFO)
+
+HOST = '0.0.0.0'  # IP address to bind to
+PORT = 8080  # Listening port
+
+# Create a TCP/IP socket
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+sock.bind((HOST, PORT))
+
+# Listen for incoming connections
+sock.listen(5)
+logging.info('Listening on {}:{}'.format(HOST, PORT))
+
+while True:
+    # Wait for a connection
+    conn, addr = sock.accept()
+    logging.info('Incoming connection from {}:{}'.format(addr[0], addr[1]))
+
+    # Wrap the connection in SSL
+    ssl_sock = ssl.wrap_socket(conn, server_side=True, certfile="server.crt", keyfile="server
