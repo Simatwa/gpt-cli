@@ -247,7 +247,7 @@ import json
 import cmd
 from re import sub
 from datetime import datetime
-from os import system, remove, path
+from os import system, remove, path, environ
 from threading import Thread as thr
 
 date_stamp = lambda text: datetime.today().strftime(text)
@@ -271,7 +271,8 @@ class gpt3_interactor:
         if not openai.api_key:
             openai.api_key_path = args.key_path
         if not openai.api_key and not openai.api_key_path:
-            exit(logging.critical("API-Key not found!"))
+            if not environ.get("OPENAI_API_KEY"):
+                exit(logging.critical("API-Key not found!"))
 
     def get_filters(self):
         """Loads the configurations"""
