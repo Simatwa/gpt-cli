@@ -1,5 +1,5 @@
 #!/usr/bin/python
-__version__ = "1.1.0"
+__version__ = "1.2.0"
 __author__ = "Smartwa Caleb"
 from colorama import Fore, Back
 from os import getlogin, getcwd, path
