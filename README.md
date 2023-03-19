@@ -75,6 +75,9 @@ Special character is `:`
     (b). background_color : modifies background_color
           e.g 'background_color cyan'
 
+    (c). img : Text-to-Image converter - (EXPERIMENTAL)
+          e.g 'img Toddler cartoon coding in Python'
+
 [#] Use single `:` (full-colon) to interact with the special commands
       e.g ':configurations'
 
