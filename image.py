@@ -124,7 +124,7 @@ class imager:
 
             for link in self.urls:
                 print(
-                    ">>[*] Downloading & saving img",
+                    ">>Downloading & saving img",
                     f'[{self.urls.index(link) + 1}]',
                     end="\r",
                 )

@@ -359,6 +359,8 @@ Special character is `:`
 
     (c). img : Text-to-Image converter - (EXPERIMENTAL)
           e.g 'img Toddler cartoon coding in Python'
+    (d). txt2img : Generate image based on GPT description
+          e.g 'txt2img Describe phenotype anatomy of ancient dinosaur'
           
 
 [#] Use single `:` (full-colon) to interact with the special commands
@@ -607,9 +609,18 @@ class main_gpt(cmd.Cmd):
                 feedback = sub("\n\n", "\n", rp[1]["text"], 1)
                 out(feedback)
                 record_keeper.main(feedback)
+                return feedback
             else:
                 logging.error(str(rp[1]))
         self.do_prompt(self.prompt_disp)
+
+    def do_txt2img(self, line):
+        """Generate images based on GPT description"""
+        description = self.default(line)
+        if description:
+            self.do_img(description)
+        else:
+            logging.error('Failed to generate description.')
 
     def do_img(self, line):
         """Text-to-Image handler"""

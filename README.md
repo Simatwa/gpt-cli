@@ -78,6 +78,9 @@ Special character is `:`
     (c). img : Text-to-Image converter - (EXPERIMENTAL)
           e.g 'img Toddler cartoon coding in Python'
 
+    (d). txt2img : Generate image based on GPT description
+          e.g 'txt2img Describe phenotype anatomy of ancient dinosaur'
+
 [#] Use single `:` (full-colon) to interact with the special commands
       e.g ':configurations'
 
