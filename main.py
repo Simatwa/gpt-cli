@@ -560,7 +560,7 @@ class imager:
             for link in self.urls:
                 print(
                     ">>[*] Downloading & saving img",
-                    f'[{self.urls.index(link) + 1}]',
+                    f"[{self.urls.index(link) + 1}]",
                     end="\r",
                 )
                 try:
@@ -620,7 +620,7 @@ class main_gpt(cmd.Cmd):
         if description:
             self.do_img(description)
         else:
-            logging.error('Failed to generate description.')
+            logging.error("Failed to generate description.")
 
     def do_img(self, line):
         """Text-to-Image handler"""
