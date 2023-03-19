@@ -124,8 +124,8 @@ class imager:
 
             for link in self.urls:
                 print(
-                    ">>Downloading & saving img",
-                    f'[{self.urls.index(link) + 1}]',
+                    ">>Downloading image",
+                    f"[{self.urls.index(link) + 1}]",
                     end="\r",
                 )
                 try:
@@ -148,7 +148,6 @@ if __name__ == "__main__":
         "-n",
         "2",
     ]
-    #start = imager(argv[1:])
-    imager(cmd).main()
-    # start imager(cmd)
+    start = imager(argv[1:])
+    # start = imager(cmd)
     # print(start.main())

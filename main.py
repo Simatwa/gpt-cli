@@ -559,8 +559,7 @@ class imager:
 
             for link in self.urls:
                 print(
-                    ">>[*] Downloading & saving img",
-                    f"[{self.urls.index(link) + 1}]",
+                    ">>Downloading image" f"[{self.urls.index(link) + 1}]",
                     end="\r",
                 )
                 try:
@@ -592,7 +591,7 @@ class main_gpt(cmd.Cmd):
             self.bcolor_dict[args.background_color] + self.color_dict[args.input_color]
         )
 
-    def default(self, raw):
+    def default(self, raw, return_fb=False):
         if not bool(raw):
             return
         interactive = local_interactor()
@@ -609,22 +608,26 @@ class main_gpt(cmd.Cmd):
                 feedback = sub("\n\n", "\n", rp[1]["text"], 1)
                 out(feedback)
                 record_keeper.main(feedback)
-                return feedback
+                if return_fb:
+                    return feedback.strip()
             else:
                 logging.error(str(rp[1]))
         self.do_prompt(self.prompt_disp)
 
     def do_txt2img(self, line):
         """Generate images based on GPT description"""
-        description = self.default(line)
+        print(">>[*] Querying description from GPT", end="\r")
+        imagiser = imager(line.split(" "))
+        description = self.default(imagiser.args.prompt, return_fb=True).strip()
         if description:
-            self.do_img(description)
+            imagiser.args.prompt = description
+            imagiser.main()
+
         else:
             logging.error("Failed to generate description.")
 
     def do_img(self, line):
         """Text-to-Image handler"""
-        print(">>[*] Querying description from GPT",end='\r')
         resp = imager(line.split(" ")).main()
         if isinstance(resp, dict):
             args.message = line
