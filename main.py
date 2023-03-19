@@ -624,6 +624,7 @@ class main_gpt(cmd.Cmd):
 
     def do_img(self, line):
         """Text-to-Image handler"""
+        print(">>[*] Querying description from GPT",end='\r')
         resp = imager(line.split(" ")).main()
         if isinstance(resp, dict):
             args.message = line
