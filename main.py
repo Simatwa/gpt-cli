@@ -229,7 +229,7 @@ class config_handler:
         import logging
 
         logging.basicConfig(
-            format="%(levelname)s - %(message)s : %(asctime)s",
+            format="%(levelname)s - %(message)s - (%(asctime)s)",
             datefmt="%d-%b-%Y %H:%M:%S",
             level=logging.INFO,
         )
@@ -619,9 +619,9 @@ class main_gpt(cmd.Cmd):
         """Generate images based on GPT description"""
         print(">>[*] Querying description from GPT", end="\r")
         imagiser = imager(line.split(" "))
-        description = self.default(imagiser.args.prompt, return_fb=True).strip()
+        description = self.default(imagiser.args.prompt, return_fb=True)
         if description:
-            imagiser.args.prompt = description
+            imagiser.args.prompt = description.strip()
             imagiser.main()
 
         else:
