@@ -680,4 +680,4 @@ if __name__ == "__main__":
     except (KeyboardInterrupt, EOFError):
         exit(logging.info("Stopping program"))
     except Exception as e:
-        logging.exception(e)
+        print(e.args[1] if len(e.args)==2 else e)
