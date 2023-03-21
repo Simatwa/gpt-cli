@@ -190,8 +190,8 @@ class config_handler:
         parser.add_argument(
             "-o",
             "--output",
-            help="Filepath for saving the chats - default [$PWD/GPT-CLI-convo.txt]",
-            default=path.join(getcwd(), "GPT-CLI-convo.txt"),
+            help="Filepath for saving the chats - default [$PWD/.chatgpt-history.txt]",
+            default=path.join(getcwd(), ".chatgpt-history.txt"),
         )
         parser.add_argument(
             "-pp",
