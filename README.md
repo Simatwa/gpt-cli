@@ -60,6 +60,8 @@ Run `$ gpt-cli -k <gpt-api-key> <Your query>` at the terminal.
 $ gpt-cli -k xxxxxxxxxxxxxxxxxx How to scan for SMB vulnerability using NMAP?
 ```
 
+## Highlight
+
 ```
 Special character is `:`  
 [#] Special commands have a predefined function as shown:
