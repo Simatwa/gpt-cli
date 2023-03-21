@@ -24,8 +24,6 @@ CLI tool for interacting with [Chatgpt-3](https://openai.com).
 
 ## Installation
 
-### Linux
-
 Running the following commands at the `terminal` will get you ready.
 
 ```sh
@@ -35,15 +33,28 @@ $ bash install.sh
  #or
 $ sudo bash install.sh
 ```
-### Windows
-
-Executables will be available soon.
 
 ## Usage 
 
+- Make OPENAI_API_KEY an environment variable.
+
+`$ export OPENAI_API_KEY=<openai-api-key>`
+
+After that you can launch the script with or without a prompt
+
+> For instance :
+```sh 
+    #Without a prompt
+   $ gpt-cli 
+      # With a prompt 
+   $ gpt-cli Write a conversation between Sun and Pluto.`
+```
+
+- Parsing OPENAI_API_KEY as one of the arguments
+
 Run `$ gpt-cli -k <gpt-api-key> <Your query>` at the terminal.
 
-* For instance :
+> For instance :
 
 ```sh
 $ gpt-cli -k xxxxxxxxxxxxxxxxxx How to scan for SMB vulnerability using NMAP?
