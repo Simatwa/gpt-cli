@@ -548,6 +548,8 @@ class imager:
         def save(self):
             """Queries the image and saves it"""
             if self.args.url:
+                for link in self.urls:
+                    print(self.urls.index(link),'-',link)
                 return
             if not self.args.output:
                 prompt = self.args.prompt.split(" ")
