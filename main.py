@@ -726,6 +726,7 @@ def get_api_key() -> str:
 if __name__ == "__main__":
     record_keeper = tracker(args.output)
     args.api_key = get_api_key()
+    openai.api_key = args.api_key
     if args.gpt in ("4"):
         from revChatGPT.V3 import Chatbot
 
