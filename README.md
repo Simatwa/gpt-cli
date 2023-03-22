@@ -5,7 +5,7 @@
 <a href="#"><img src="https://img.shields.io/static/v1?label=License&message=MIT&color=green&logo=MIT" alt="license"/></a>
 <a href="#"><img src="https://img.shields.io/static/v1?label=Development&message=Beta&color=Orange&logo=progress" alt="Progress"/></a>
 <a href="#"><img src="https://img.shields.io/static/v1?label=Code Style&message=Black&color=black&logo=Black" alt="Code-style"/></a>
-<a href="#"><img src="https://img.shields.io/static/v1?label=Coverage&message=20%&color=red" alt="Coverage"/></a>
+<a href="#"><img src="https://img.shields.io/static/v1?label=Coverage&message=80%&color=red" alt="Coverage"/></a>
 </p>
 
 CLI tool for interacting with [ChatGPT](https://openai.com). 
@@ -118,10 +118,10 @@ $ gpt-cli -k xxxxxxxxxxxxxxxxxx How to scan for SMB vulnerability using NMAP?
  - e.g ```load DAN.json```
 
 8._rollback : Rollback the Chat by the {n} time(s)
- - e.g '_rollback 2'
+ - e.g ```_rollback 2```
 
 9._reset : Reset current chat and start new
- - e.g '_reset Chat as if you are a 10 year old child'
+ - e.g ```_reset Chat as if you are a 10 year old child```
 
 10._help : Show this help info
 
@@ -220,12 +220,8 @@ As a `terminal guy` I used to find it uncomfortable to keep shifting from one wi
 - Anyone is free to [fork](https://github.com/Simatwa/gpt-cli/fork), submit an [issue](https://github.com/Simatwa/gpt-cli/issues) without any **guideline** or submitting a [pull request](https://github.com/Simatwa/gpt-cli/pulls).
 
 ### ToDo
-<details>
- - Attributed to [ChatGPT](https://github.com/acheong08/ChatGPT)
-<summary>
+
 - [x] Use dialogue
-</summary>
-</details>
 - [ ] Send text from a file
 - [ ] Busy bar
 
