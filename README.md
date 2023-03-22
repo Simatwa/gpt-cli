@@ -8,7 +8,8 @@
 <a href="#"><img src="https://img.shields.io/static/v1?label=Coverage&message=20%&color=red" alt="Coverage"/></a>
 </p>
 
-CLI tool for interacting with [ChatGPT](https://openai.com). Chat and generate images.
+CLI tool for interacting with [ChatGPT](https://openai.com). 
+> Chat and generate images.
 
 ![screenshot](assets/Screenshot1.png)
 
