@@ -1,5 +1,5 @@
 #!/usr/bin/python
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 __author__ = "Smartwa Caleb"
 from colorama import Fore, Back
 from os import getlogin, getcwd, path
@@ -8,16 +8,6 @@ import argparse
 
 class config_handler:
     def __init__(self):
-        self.sample = """
-          { 
-             "model":"text-davinci-003",
-             "prompt":"How to scan for SMB vulnerability using NMAP?",
-             "temperature":0.7,
-             "max_tokens":256,
-             "top_p":1,
-             "frequency_penalty":0,
-             "presence_penalty":0
-        }"""
         self.color_dict = {
             "cyan": Fore.CYAN,
             "red": Fore.RED,
@@ -38,6 +28,17 @@ class config_handler:
             "black": Back.BLACK,
             "reset": Back.RESET,
         }
+        self.v4models = [
+            "gpt-3.5-turbo",
+            "gpt-4",
+            "gpt-4-32k",
+            "gpt-3.5-turbo",
+            "gpt-3.5-turbo-0301",
+            "gpt-4",
+            "gpt-4-0314",
+            "gpt-4-32k",
+            "gpt-4-32k-031",
+        ]
         self.float_range = self.generate_floats()
         self.colors = list(self.color_dict.keys())
 
@@ -54,7 +55,7 @@ class config_handler:
         """Gets args parsed"""
 
         parser = argparse.ArgumentParser(
-            description="Interact with GPT3 at the terminal"
+            description="Interact with ChatGPT at the terminal"
         )
         parser.add_argument(
             "-v", "--version", action="version", version=f"%(prog)s v{__version__}"
@@ -80,8 +81,8 @@ class config_handler:
         parser.add_argument(
             "-m",
             "--model",
-            help="Model to be used",
-            choices=models,
+            help="ChatGPT model to be used",
+            choices=models + self.v4models,
             metavar="davinci|curie|babbage",
         )
         parser.add_argument(
@@ -91,6 +92,7 @@ class config_handler:
             type=float,
             choices=self.float_range[0:10],
             metavar="[0.1-1]",
+            default=0.1,
         )
         parser.add_argument(
             "-mt",
@@ -100,6 +102,7 @@ class config_handler:
             dest="max_tokens",
             choices=range(1, 4001),
             metavar="[1-4000]",
+            default=4000,
         )
         parser.add_argument(
             "-tp",
@@ -109,6 +112,7 @@ class config_handler:
             dest="top_p",
             choices=self.float_range[0:10],
             metavar="[0.1-1]",
+            default=0.1,
         )
         parser.add_argument(
             "-f",
@@ -118,6 +122,7 @@ class config_handler:
             dest="frequency_penalty",
             choices=self.float_range,
             metavar="[0.1-2]",
+            default=0.1,
         )
         parser.add_argument(
             "-p",
@@ -126,6 +131,7 @@ class config_handler:
             type=float,
             dest="presence_frequency",
             choices=self.float_range,
+            default=0.1,
             metavar="[0.1-2]",
         )
         parser.add_argument("-k", "--key", help="GPT-API key")
@@ -134,15 +140,13 @@ class config_handler:
             "--key-path",
             help="Path to text-file containing GPT-api key",
             dest="key_path",
-        )
-        parser.add_argument(
-            "-c", "--config", help="Use json-formatted configurations in path"
+            metavar="path",
         )
         parser.add_argument(
             "-ic",
             "--input-color",
             help="Font color for inputs",
-            default="reset",
+            default="green",
             dest="input_color",
             metavar="[cyan|green|yellow|red]",
             choices=self.colors,
@@ -182,15 +186,39 @@ class config_handler:
             nargs="*",
         )
         parser.add_argument(
-            "--response",
-            help="Holds the last response from remote-API",
-            required=False,
-            action="store_true",
+            "-tm", "--timeout", help="Request timeout while making request - (Soon)"
+        )
+        parser.add_argument("-pr", "--proxy", help="Pivot request through this proxy")
+        parser.add_argument(
+            "-rc",
+            "--reply-count",
+            help="Number of responses to be received",
+            dest="reply_count",
+            default=1,
+            type=int,
+            metavar="value",
+        )
+        parser.add_argument(
+            "-g",
+            "--gpt",
+            help="ChatGPT version to be used ",
+            choices=["1", "4"],
+            metavar="|".join(["1,4"]),
+            default="4",
+        )
+        parser.add_argument(
+            "-sp",
+            "--system-prompt",
+            nargs="*",
+            dest="system_prompt",
+            help="Text to fine-tune GPT at the start",
+            default="You are ChatGPT, a large language model trained by OpenAI. Respond conversationally",
+            metavar="Text",
         )
         parser.add_argument(
             "-o",
             "--output",
-            help="Filepath for saving the chats - default [$PWD/.chatgpt-history.txt]",
+            help=f"Filepath for saving the chats - default [{getcwd()}/.chatgpt-history.txt]",
             default=path.join(getcwd(), ".chatgpt-history.txt"),
         )
         parser.add_argument(
@@ -208,6 +236,12 @@ class config_handler:
             dest="response_prefix",
             metavar="prefix",
             default="",
+        )
+        parser.add_argument(
+            "--disable-stream",
+            dest="disable_stream",
+            help="Specifies not to stream responses from ChatGPT",
+            action="store_true",
         )
         parser.add_argument(
             "--new-record",
@@ -242,8 +276,8 @@ class config_handler:
 config_h = config_handler()
 args, logging = config_h.main()
 from sys import exit, stderr
-import openai
 import json
+import openai
 import cmd
 from re import sub
 from datetime import datetime
@@ -252,67 +286,46 @@ from threading import Thread as thr
 
 date_stamp = lambda text: datetime.today().strftime(text)
 
+getExc = lambda e: e.args[1] if isinstance(e.args, list) else str(e)
+
 
 class gpt3_interactor:
     def __init__(self):
-        self.params = self.get_filters()
-        try:
-            openai.api_key = self.params["api_key"]
-        except KeyError:
-            logging.debug(f"API-key not found in config")
+        pass
+
+    def gpt_v1(self, rp: str = None):
+        """Utilises GPTv1"""
+        if not args.disable_stream:
+            for data in chatbot.ask_stream(args.message, args.temperature):
+                print(data, end="", flush=True)
+                rp = "".join([rp, data])
         else:
-            logging.debug("Getting rid of key from params")
-            self.params.pop("api_key")
-        if not openai.api_key:
-            self.get_api_key()
+            rp = chatbot.ask(args.message)
+            print(rp)
+        return rp
 
-    def get_api_key(self):
-        openai.api_key = args.key
-        if not openai.api_key:
-            openai.api_key_path = args.key_path
-        if not openai.api_key and not openai.api_key_path:
-            if not environ.get("OPENAI_API_KEY"):
-                exit(logging.critical("API-Key not found!"))
-
-    def get_filters(self):
-        """Loads the configurations"""
-        if args.config:
-            try:
-                with open(args.config) as file:
-                    return json.loads(file.read())
-            except Exception as e:
-                exit(logging.critical(str(e)))
+    def gpt_v4(self, rp: str = None):
+        """Utilises GPTv4"""
+        if not args.disable_stream:
+            for data in chatbot.ask_stream(args.message):
+                print(data, end="", flush=True)
+                rp = "".join([rp, data])
         else:
-            return self.partial_filters(json.loads(config_handler().sample))
-
-    def partial_filters(self, sample: dict):
-        """Loads partial configurations parsed"""
-        from_args = {
-            "prompt": args.message,
-            "model": args.model,
-            "temperature": args.temperature,
-            "max_tokens": args.max_tokens,
-            "top_p": args.top_p,
-            "frequency_penalty": args.frequency_penalty,
-            "presence_frequency": args.presence_frequency,
-        }
-        for key, value in from_args.items():
-            if value:
-                sample[key] = value
-        return sample
+            rp = chatbot.ask(args.message)
+            print(rp)
+        return rp
 
     def main(self):
-        """Main Function"""
+        """Main Method"""
         try:
-            self.params["prompt"] = args.message
-            resp = openai.Completion.create(**self.params)
+            if args.gpt in ("4"):
+                return (True, self.gpt_v4(""))
+            else:
+                return (True, self.gpt_v1(""))
         except Exception as e:
-            rp = (False, e)
-        else:
-            args.response = dict(resp)
-            rp = (True, args.response["choices"][0])
-        finally:
-            return rp
+            # logging.exception(e)
+            info = getExc(e)
+            return (False, info)
 
 
 gpt3 = gpt3_interactor()
@@ -320,101 +333,73 @@ gpt3 = gpt3_interactor()
 
 class local_interactor:
     def __init__(self):
-        self.special_input = {
-            ":check": self.check,
-            ":set": self.edit_config,
-            ":response": self.response,
-            ":configurations": self.configurations,
-            ":help": self.help,
-        }
+        self.special_input = {}
         self.run = lambda key: self.special_input[key]()
 
     def help(self):
         return f"""
-gpt-cli v{__version__} 
+gpt-cli {__version__}
 
-Special character is `:`  
-[#] Special commands have a predefined function as shown:
+╒═══════╤═══════════════════╤═════════════════════════════════════════════╕
+│   No. │ Command           │ Action                                      │
+╞═══════╪═══════════════════╪═════════════════════════════════════════════╡
+│   1   │ ./{{command}}       │ Run command against system                  │
+├───────┼───────────────────┼─────────────────────────────────────────────┤
+│   2   │ img               │ Generate image based on prompt              │
+├───────┼───────────────────┼─────────────────────────────────────────────┤
+│   3   │ txt2img           │ Generate image based on GPT description     │
+├───────┼───────────────────┼─────────────────────────────────────────────┤
+│   4   │ _font_color       │ Modify font-color                           │
+├───────┼───────────────────┼─────────────────────────────────────────────┤
+│   5   │ _background_color │ Modify background_color                     │
+├───────┼───────────────────┼─────────────────────────────────────────────┤
+│   6   │ _prompt           │ Modify terminal prompt                      │
+├───────┼───────────────────┼─────────────────────────────────────────────┤
+│   7   │ _save             │ Save current configurations to `.json` file │
+├───────┼───────────────────┼─────────────────────────────────────────────┤
+│   8   │ _load             │ Load configurations from file               │
+├───────┼───────────────────┼─────────────────────────────────────────────┤
+│   9   │ _rollback         │ Rollback Chat by {{n}} times                  │
+├───────┼───────────────────┼─────────────────────────────────────────────┤
+│  10   │ _reset            │ Reset current chat and start new            │
+├───────┼───────────────────┼─────────────────────────────────────────────┤
+│  11   │ _help             │ Show this help info                         │
+├───────┼───────────────────┼─────────────────────────────────────────────┤
+│  12   │ {{Any Other}}       │ Chat with ChatGPT                           │
+╘═══════╧═══════════════════╧═════════════════════════════════════════════╛
 
-╒═════════════════╤══════════════════════════════════════════════════════╕
-│ Command         │ Function                                             │
-╞═════════════════╪══════════════════════════════════════════════════════╡
-│ :check          │ Gives a shallow display of the response from the API │
-├─────────────────┼──────────────────────────────────────────────────────┤
-│ :set            │ Configures api request parameters                    │
-├─────────────────┼──────────────────────────────────────────────────────┤
-│ :response       │ Shows whole feedback from the last request           │
-├─────────────────┼──────────────────────────────────────────────────────┤
-│ :configurations │ Shows api request parameters                         │
-├─────────────────┼──────────────────────────────────────────────────────┤
-│ :help           │ Outputs this help info                               │
-╘═════════════════╧══════════════════════════════════════════════════════╛
+1.  img : Text-to-Image converter - (EXPERIMENTAL)
+    e.g 'img Toddler cartoon coding in Python'
 
-[#] Inputs without special character interacts with the CHAT-GPT3 except:
+2.  txt2img : Generate image based on GPT description
+    e.g 'txt2img Describe phenotype anatomy of ancient dinosaurs'
 
-    (a). font_color : modifies font-color
-          e.g 'font_color input red'
+3. _font_color : modifies font-color
+    e.g 'font_color input red'
 
-    (b). background_color : modifies background_color
-          e.g 'background_color cyan'
+4. _background_color : modifies background_color
+    e.g 'background_color cyan'
 
-    (c). img : Text-to-Image converter - (EXPERIMENTAL)
-          e.g 'img Toddler cartoon coding in Python'
-    (d). txt2img : Generate image based on GPT description
-          e.g 'txt2img Describe phenotype anatomy of ancient dinosaur'
-          
+5. _prompt : Modify CMD prompt
+    e.g '_prompt ┌─[{getlogin().capitalize()}@ChatGPT4]─(%H:%M:%S)
 
-[#] Use single `:` (full-colon) to interact with the special commands
-      e.g ':configurations'
+6. _load : Load configurations from the json file
+    e.g '_load DAN.json'
 
-[#] Use double `::` (full-colon) to interact with the system commands
-      e.g '::ifconfig'
+7. _save : Save the current Chat Configurations
+    e.g '_load DAN.json'
 
-[NOTE] special characters must occupy the first indexes
+8. _rollback : Rollback the Chat by  {{n}} time(s)
+    e.g '_rollback 2'
 
-[#] Modify the chat-gpt parameters by introducing `:set` command
-  e.g ':set model curie'
+9. _reset : Reset current chat and start new
+    e.g '_reset Chat as if you are a 10 year old child'
+
+10. _help : Show this help info
+
+* Use double `./` (fullstop and foward slash) to interact with system commands
+      e.g './ifconfig'
         """
-
-    def response(self):
-        return json.dumps(args.response, indent=4)
-
-    def configurations(self):
-        return json.dumps(gpt3.params, indent=4)
-
-    def edit_config(self):
-        new_conf = args.settings.split(" ")
-        reference = {
-            "model": str,
-            "prompt": str,
-            "temperature": float,
-            "max_tokens": int,
-            "top_p": int,
-            "frequency_penalty": float,
-            "presence_penalty": float,
-        }
-        if new_conf[1] in tuple(reference.keys()):
-            try:
-                gpt3.params[new_conf[1]] = reference[new_conf[1]](new_conf[2])
-                return "ok"
-            except Exception as e:
-                logging.error(e)
-        else:
-            logging.error(f"'{new_conf[1]}' NOT in {list(reference.keys())}")
-
-    def check(self):
-        if isinstance(args.response, dict):
-            rp = args.response["choices"][0]
-            try:
-                rp.pop("text")
-            except KeyError:
-                pass
-            return rp
-
-
-time_now_format = lambda v: str(
-    f"{config_h.color_dict[args.prompt_color]}{date_stamp(v)}{config_h.color_dict[args.input_color]}\r\n└──╼ ❯❯❯"
-)
 
 
 class tracker:
@@ -426,13 +411,13 @@ class tracker:
         self.failed_to_record = False
 
     def save_record(self) -> None:
-        """Writes the prompt and response in a file"""
+        """Write prompts and responses in a file"""
         info_to_write = f"\n\n{date_stamp(args.prompt_prefix)}{args.message}\n\n{date_stamp(args.response_prefix)}{self.feedback}"
         try:
             with open(self.filepath, "a") as fp:
                 fp.write(info_to_write)
         except Exception as e:
-            logging.error(f"Failed to keep record - {e}")
+            logging.error(f"Failed to keep record - {getExc(e)}")
             self.failed_to_record = True
 
     def main(self, response: str) -> None:
@@ -517,7 +502,7 @@ class imager:
             return {"api_resp": image_resp, "url": resp}
 
         except Exception as e:
-            logging.error(str(e))
+            logging.error(getExc(e))
 
     class image_saver:
         """Receives urls, query and save the contents"""
@@ -549,7 +534,7 @@ class imager:
             """Queries the image and saves it"""
             if self.args.url:
                 for link in self.urls:
-                    print(self.urls.index(link),'-',link)
+                    print(self.urls.index(link), "-", link)
                 return
             if not self.args.output:
                 prompt = self.args.prompt.split(" ")
@@ -574,10 +559,15 @@ class imager:
                             f">>Failed to download image - Code : {resp.status_code} - {resp.reason}"
                         )
                 except Exception as e:
-                    logging.error(str(e))
+                    logging.error(getExc(e))
 
 
-### Main class
+time_now_format = lambda v: str(
+    f"{config_h.color_dict[args.prompt_color]}{date_stamp(v)}{config_h.color_dict[args.input_color]}\r\n└──╼ ❯❯❯"
+)
+join_list = lambda line: "_".join(
+    line.split(" ") if len(line.split(" ")) > 1 else [line]
+)
 
 
 class main_gpt(cmd.Cmd):
@@ -588,6 +578,7 @@ class main_gpt(cmd.Cmd):
     config_handler = config_handler()
     color_dict = config_handler.color_dict
     bcolor_dict = config_handler.bcolor_dict
+    interactive = local_interactor()
 
     def apply_color(self):
         print(
@@ -597,25 +588,25 @@ class main_gpt(cmd.Cmd):
     def default(self, raw, return_fb=False):
         if not bool(raw):
             return
-        interactive = local_interactor()
-        out = lambda b: print(self.color_dict[args.output_color] + b + Fore.RESET)
-        if raw.split(" ")[0] in tuple(interactive.special_input.keys()):
-            args.settings = raw
-            out(str(interactive.run(raw.split(" ")[0])))
-        elif raw[0:2] == "::":
+        # out = lambda b: print(self.color_dict[args.output_color] + b + Fore.RESET)
+        if raw[0:2] == "./":
             system((raw[2:]).strip())
-        elif bool(raw):
+        else:
+            if not bool(raw):
+                return
             args.message = raw
+            print(self.color_dict[args.output_color], end="")
             rp = gpt3.main()
             if rp[0]:
-                feedback = sub("\n\n", "\n", rp[1]["text"], 1)
-                out(feedback)
+                feedback = sub("\n\n", "\n", rp[1], 1)
                 record_keeper.main(feedback)
                 if return_fb:
                     return feedback.strip()
+
             else:
                 logging.error(str(rp[1]))
-        self.do_prompt(self.prompt_disp)
+            print(Fore.RESET)
+        self.do__prompt(self.prompt_disp)
 
     def do_txt2img(self, line):
         """Generate images based on GPT description"""
@@ -636,12 +627,12 @@ class main_gpt(cmd.Cmd):
             args.message = line
             record_keeper.main(str(resp["url"]))
 
-    def do_prompt(self, line):
+    def do__prompt(self, line):
         """Modify prompts"""
         self.prompt_disp = line
         self.prompt = time_now_format(line)
 
-    def do_font_color(self, line):
+    def do__font_color(self, line):
         """Sets font color"""
         line = line.lower().split(" ")
         try:
@@ -653,13 +644,13 @@ class main_gpt(cmd.Cmd):
 
             else:
                 args.prompt_color = line[1]
-                self.do_prompt(self.prompt_disp)
+                self.do__prompt(self.prompt_disp)
         except Exception as e:
-            logging.exception(e)
+            logging.error(getExc(e))
         else:
             self.apply_color()
 
-    def do_background_color(self, line):
+    def do__background_color(self, line):
         """Sets background-color"""
 
         try:
@@ -669,9 +660,95 @@ class main_gpt(cmd.Cmd):
         except Exception as e:
             logging.exception(e)
 
+    def do__save(self, line):
+        try:
+            if gpt4:
+                all = (
+                    "engine",
+                    "session",
+                    "api_key",
+                    "system_prompt",
+                    "max_tokens",
+                    "temperature",
+                    "top_p",
+                    "presence_penalty",
+                    "frequency_penalty",
+                    "reply_count",
+                )
+                chatbot.save(join_list(line), *all)
+            else:
+                chatbot.save_conversation(join_list(line))
+        except Exception as e:
+            logging.error(getExc(e))
+
+    def do__load(self, line):
+        try:
+            if gpt4:
+                chatbot.load(join_list(line))
+            else:
+                chatbot.load_conversation(join_list(line))
+        except Exception as e:
+            logging.error(getExc(e))
+            # logging.exception(e)
+
+    def do__rollback(self, line):
+        try:
+            if line.isdigit():
+                chatbot.rollback(int(line))
+        except Exception as e:
+            logging.error(getExc(e))
+
+    def do__reset(self, line):
+        try:
+            if gpt4:
+                chatbot.reset(system_prompt=args.system_prompt)
+            else:
+                chatbot.reset()
+        except Exception as e:
+            logging.error(getExc(e))
+
+    def do__help(self, line):
+        print(self.interactive.help())
+
+
+def get_api_key() -> str:
+    """Gets API from Key_path or args.key"""
+    if any([args.key, environ.get("OPENAI_API_KEY")]):
+        return args.key or environ.get("OPENAI_API_KEY")
+    if args.key_path:
+        try:
+            with open(args.key_path) as fh:
+                return fh.readlines()[0]
+        except Exception as e:
+            exit(logging.critical("While opening Key_Path " + getExc(e)))
+
 
 if __name__ == "__main__":
     record_keeper = tracker(args.output)
+    args.api_key = get_api_key()
+    if args.gpt in ("4"):
+        from revChatGPT.V3 import Chatbot
+
+        gpt4 = True
+        chatbot = Chatbot(
+            api_key=args.api_key,
+            engine=args.model if args.model in config_h.v4models else "gpt-3.5-turbo",
+            # timeout=args.timeout, #Available as from revChatGPT>=4.0.6.1
+            proxy=args.proxy,  #
+            max_tokens=args.max_tokens,
+            temperature=args.temperature,
+            presence_penalty=args.presence_frequency,
+            frequency_penalty=args.frequency_penalty,
+            reply_count=args.reply_count,  
+            system_prompt=args.system_prompt,  
+        )
+    else:
+        gpt4 = False
+        from revChatGPT.V0 import Chatbot
+
+        chatbot = Chatbot(api_key=args.api_key, engine=args.model, proxy=args.proxy)
+        print(chatbot.ask('Hello there'))
+        exit()
     try:
         if args.new_record and path.isfile(args.output):
             remove(args.output)
@@ -682,4 +759,4 @@ if __name__ == "__main__":
     except (KeyboardInterrupt, EOFError):
         exit(logging.info("Stopping program"))
     except Exception as e:
-        print(e.args[1] if len(e.args)==2 else e)
+        print(getExc(e))
