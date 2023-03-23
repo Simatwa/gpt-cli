@@ -99,7 +99,6 @@ class config_handler:
             "--max-tokens",
             help="Maximum number of tokens to be generated upon completion",
             type=int,
-            dest="max_tokens",
             choices=range(1, 4001),
             metavar="[1-4000]",
             default=4000,
@@ -109,7 +108,6 @@ class config_handler:
             "--top-p",
             help="Sampling threshold during inference time",
             type=float,
-            dest="top_p",
             choices=self.float_range[0:10],
             metavar="[0.1-1]",
             default=0.1,
@@ -119,7 +117,6 @@ class config_handler:
             "--frequency-penalty",
             help="Chances of word being repeated",
             type=float,
-            dest="frequency_penalty",
             choices=self.float_range,
             metavar="[0.1-2]",
             default=0.1,
@@ -129,7 +126,6 @@ class config_handler:
             "--presence-frequency",
             help="Chances of topic being repeated",
             type=float,
-            dest="presence_frequency",
             choices=self.float_range,
             default=0.1,
             metavar="[0.1-2]",
@@ -139,7 +135,6 @@ class config_handler:
             "-kp",
             "--key-path",
             help="Path to text-file containing GPT-api key",
-            dest="key_path",
             metavar="path",
         )
         parser.add_argument(
@@ -147,7 +142,6 @@ class config_handler:
             "--input-color",
             help="Font color for inputs",
             default="green",
-            dest="input_color",
             metavar="[cyan|green|yellow|red]",
             choices=self.colors,
         )
@@ -156,7 +150,6 @@ class config_handler:
             "--output-color",
             help="Font color for outputs",
             default="cyan",
-            dest="output_color",
             metavar="[cyan|green|yellow|red]",
             choices=self.colors,
         )
@@ -165,7 +158,6 @@ class config_handler:
             "--background-color",
             help="Console's background-color",
             default="reset",
-            dest="background_color",
             metavar="[blue,magenta,black,reset]",
             choices=self.colors,
         )
@@ -174,7 +166,6 @@ class config_handler:
             "--prompt-color",
             help="Prompt's display color",
             default="yellow",
-            dest="prompt_color",
             metavar="[cyan|green|yellow|red]",
             choices=self.colors,
         )
@@ -193,7 +184,6 @@ class config_handler:
             "-rc",
             "--reply-count",
             help="Number of responses to be received",
-            dest="reply_count",
             default=1,
             type=int,
             metavar="value",
@@ -210,11 +200,11 @@ class config_handler:
             "-sp",
             "--system-prompt",
             nargs="*",
-            dest="system_prompt",
-            help="Text to fine-tune GPT at the start",
+            help="Text to train ChatGPT at the start",
             default="You are ChatGPT, a large language model trained by OpenAI. Respond conversationally",
-            metavar="Text",
+            metavar="text",
         )
+        parser.add_argument('-fp','--file-path',help='Path to file .csv containing - [act,prompt]',metavar = 'path')
         parser.add_argument(
             "-o",
             "--output",
@@ -225,7 +215,6 @@ class config_handler:
             "-pp",
             "--prompt-prefix",
             help="Text to append before saving each prompt - default [>>timestamp]",
-            dest="prompt_prefix",
             metavar="prefix",
             default=">>(%d-%b %H:%M:%S) : ",
         )
@@ -233,13 +222,11 @@ class config_handler:
             "-rp",
             "--response-prefix",
             help="Text to append before saving each response - default [None]",
-            dest="response_prefix",
             metavar="prefix",
             default="",
         )
         parser.add_argument(
             "--disable-stream",
-            dest="disable_stream",
             help="Specifies not to stream responses from ChatGPT",
             action="store_true",
         )
@@ -247,14 +234,13 @@ class config_handler:
             "--new-record",
             help="Override previous chats under the filepath",
             action="store_true",
-            dest="new_record",
         )
         parser.add_argument(
             "--disable-recording",
-            dest="disable_recording",
             help="Disable saving prompts and responses",
             action="store_true",
         )
+        parser.add_argument('--update',help='Download latest prompts - [awesome-chatgpt-prompts]',action='store_true')
 
         return parser.parse_args()
 
@@ -281,12 +267,24 @@ import openai
 import cmd
 from re import sub
 from datetime import datetime
-from os import system, remove, path, environ
+from os import system, remove, path, environ, makedirs
 from threading import Thread as thr
+from appdirs import AppDirs
+
+app_dir =AppDirs('smartwa','gpt-cli',).user_data_dir
+
+first_time_run = False
 
 date_stamp = lambda text: datetime.today().strftime(text)
 
 getExc = lambda e: e.args[1] if isinstance(e.args, list) else str(e)
+
+if not path.isdir(app_dir):
+    first_time_run = True
+    try:
+        makedirs(app_dir)
+    except Exception as e:
+        logging.error(getExc(e))
 
 
 class gpt3_interactor:
@@ -296,22 +294,22 @@ class gpt3_interactor:
     def gpt_v1(self, rp: str = None):
         """Utilises GPTv1"""
         if not args.disable_stream:
-            for data in chatbot.ask_stream(args.message, args.temperature):
+            for data in chatbot.ask_stream(args.message, args.temperature,role=args.role):
                 print(data, end="", flush=True)
                 rp = "".join([rp, data])
         else:
-            rp = chatbot.ask(args.message)
+            rp = chatbot.ask(args.message,role=args.role)
             print(rp)
         return rp
 
     def gpt_v4(self, rp: str = None):
         """Utilises GPTv4"""
         if not args.disable_stream:
-            for data in chatbot.ask_stream(args.message):
+            for data in chatbot.ask_stream(args.message,role=args.role):
                 print(data, end="", flush=True)
                 rp = "".join([rp, data])
         else:
-            rp = chatbot.ask(args.message)
+            rp = chatbot.ask(args.message,role=args.role)
             print(rp)
         return rp
 
@@ -561,6 +559,48 @@ class imager:
                 except Exception as e:
                     logging.error(getExc(e))
 
+class intro_prompt_handler:
+    def __init__(self,filename:str=path.join(app_dir,'awesome_prompts')):
+        self.fnm = filename
+        self.links = {'prompts':"https://raw.githubusercontent.com/f/awesome-chatgpt-prompts/main/prompts.csv",
+        'prompts1':"https://raw.githubusercontent.com/Simatwa/gpt-cli/main/prompts.csv"}
+    def update(self) -> list: 
+        from requests import get
+        try:
+            logging.info('Updating acts and prompts')
+
+            for key,value in self.links.items():
+                resp = get(value)
+                if resp.status_code == 200:
+                    with open(path.join(app_dir,key),'w') as fh:
+                        fh.write(resp.text)
+                else:
+                    logging.error(f'Failed to get prompts from "{value}" - [{resp.status_code} : {resp.reason}]')
+        except Exception as e:
+            logging.error(getExc(e))
+
+    def read_contents(self,filename:str=None,delimiter:str=',',resp:dict = {}):
+        """Read prompts and return in dict {act:prompt}"""
+        import csv
+        with open(filename or self.fnm) as fh:
+            for row in csv.DictReader(fh,delimiter=delimiter):
+                resp[row['act']]=row['prompt']
+        return resp
+
+    def main(self,filepath:str=None):
+        resp = {}
+        try:
+            if any([args.update,first_time_run,not path.isfile(path.join(app_dir,'prompts'))]) :
+                self.update()
+            if filepath:
+                return self.read_contents(filepath)
+            else:
+                tpath = lambda fp:path.join(app_dir,fp)
+                resp = self.read_contents(tpath('prompts'))
+                return self.read_contents(tpath('prompts1'),'~',resp)
+        except Exception as e:
+            logging.error(getExc(e))
+            return resp
 
 time_now_format = lambda v: str(
     f"{config_h.color_dict[args.prompt_color]}{date_stamp(v)}{config_h.color_dict[args.input_color]}\r\n└──╼ ❯❯❯"
@@ -722,10 +762,23 @@ def get_api_key() -> str:
         except Exception as e:
             exit(logging.critical("While opening Key_Path " + getExc(e)))
 
+def intro_train(error_msg:str='Using default configurations') -> None:
+    prompt_dict = intro_prompt_handler().main(args.file_path or None)
+    args.__setattr__('role','default' if args.gpt=='1' else 'user')
+    if args.message in list(prompt_dict.keys()):
+        try:
+            role = args.message
+            args.message = prompt_dict[args.message]
+            args.role = role
+        except (KeyError):
+            logging.warning(error_msg)
+    else:
+        logging.warning(error_msg)
 
 if __name__ == "__main__":
     record_keeper = tracker(args.output)
     args.api_key = get_api_key()
+    intro_train()
     openai.api_key = args.api_key
     if args.gpt in ("4"):
         from revChatGPT.V3 import Chatbot
@@ -748,8 +801,6 @@ if __name__ == "__main__":
         from revChatGPT.V0 import Chatbot
 
         chatbot = Chatbot(api_key=args.api_key, engine=args.model, proxy=args.proxy)
-        print(chatbot.ask('Hello there'))
-        exit()
     try:
         if args.new_record and path.isfile(args.output):
             remove(args.output)
