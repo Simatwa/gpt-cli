@@ -57,7 +57,7 @@ After that you can launch the script with or without a prompt
 ```sh 
     #Without a prompt
    $ gpt-cli 
-      # With a prompt 
+    # With a prompt 
    $ gpt-cli Write a conversation between Sun and Pluto.`
 ```
 
@@ -70,6 +70,18 @@ Run `$ gpt-cli -k <gpt-api-key> <Your query>` at the terminal.
 ```sh
 $ gpt-cli -k xxxxxxxxxxxxxxxxxx How to scan for SMB vulnerability using NMAP?
 ```
+
+The [awesome-chatgpt-prompts](https://github.com/f/awesome-chatgpt-prompts) can be parsed to the script through the following ways:
+
+- Specifying the role - (*case-sensitive*)
+
+    e.g `$ gpt-cli UX/UI Developer`
+
+- Specifying the index of the prompt:
+
+    e.g `$ gpt-cli 29`
+
+Run `$ gpt-cli --dump show` to view the act,prompt and their **indexes**  
 
 ## Highlight
 <details>
@@ -124,7 +136,7 @@ $ gpt-cli -k xxxxxxxxxxxxxxxxxx How to scan for SMB vulnerability using NMAP?
 
 10._help : Show this help info
 
-* Use double `./` *(fullstop and foward slash)* to interact with **system commands**
+* Use double `./` *(fullstop and forward slash)* to interact with **system commands**
   e.g './ifconfig'
 </details>
 
@@ -136,14 +148,16 @@ $ gpt-cli -k xxxxxxxxxxxxxxxxxx How to scan for SMB vulnerability using NMAP?
   </summary>
 
 ```
-  usage: main.py [-h] [-v] [-m davinci|curie|babbage] [-t [0.1-1]]
+usage: main.py [-h] [-v] [-m davinci|curie|babbage] [-t [0.1-1]]
                [-mt [1-4000]] [-tp [0.1-1]] [-f [0.1-2]] [-p [0.1-2]] [-k KEY]
                [-kp path] [-ic [cyan|green|yellow|red]]
                [-oc [cyan|green|yellow|red]] [-bc [blue,magenta,black,reset]]
                [-pc [cyan|green|yellow|red]] [--prompt [SETTINGS ...]]
-               [-tm TIMEOUT] [-pr PROXY] [-rc value] [-g 1,4] [-sp [Text ...]]
-               [-o OUTPUT] [-pp prefix] [-rp prefix] [--disable-stream]
-               [--new-record] [--disable-recording]
+               [-tm TIMEOUT] [-pr PROXY] [-rc value] [-g 1,4] [-sp [text ...]]
+               [-fp path] [-o OUTPUT] [-pp prefix] [-rp prefix]
+               [-dm keys|values|show|{file}] [-dl DELIMITER]
+               [--disable-stream] [--new-record] [--disable-recording]
+               [--zero-show] [--update]
                [message ...]
 
 Interact with ChatGPT at the terminal
@@ -187,8 +201,11 @@ optional arguments:
   -rc value, --reply-count value
                         Number of responses to be received
   -g 1,4, --gpt 1,4     ChatGPT version to be used
-  -sp [Text ...], --system-prompt [Text ...]
-                        Text to fine-tune GPT at the start
+  -sp [text ...], --system-prompt [text ...]
+                        Text to train ChatGPT at the start
+  -fp path, --file-path path
+                        Path to .csv file containing role and prompt -
+                        [act,prompt]
   -o OUTPUT, --output OUTPUT
                         Filepath for saving the chats - default
                         [/home/smartwa/git/gpt-cli/.chatgpt-history.txt]
@@ -198,9 +215,17 @@ optional arguments:
   -rp prefix, --response-prefix prefix
                         Text to append before saving each response - default
                         [None]
+  -dm keys|values|show|{file}, --dump keys|values|show|{file}
+                        Stdout [keys,values]; Save all prompts in json format
+                        to a file
+  -dl DELIMITER, --delimiter DELIMITER
+                        Delimeter for for the .CSV file - [act,prompt]
   --disable-stream      Specifies not to stream responses from ChatGPT
   --new-record          Override previous chats under the filepath
   --disable-recording   Disable saving prompts and responses
+  --zero-show           Specifies not to stdout prompt of the act parsed
+  --update              Download latest prompts - [awesome-chatgpt-prompts]
+
 ```
 
   </details>
@@ -211,6 +236,7 @@ optional arguments:
 
 
 ## Motive
+
 <details>
 <summary>
 Love for `Terminal` ❤️
