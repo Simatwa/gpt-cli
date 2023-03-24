@@ -213,7 +213,7 @@ optional arguments:
 ## Motive
 <details>
 <summary>
-Love for ❤️
+Love for `Terminal` ❤️
 </summary>
 As a `terminal guy` I used to find it uncomfortable to keep shifting from one window to next in order to access ChatGPT even after trying out the [gpt-login](https://github.com/Simatwa/gpt-login), the rest is [here.](https://github.com/Simatwa/gpt-cli)
 </details>
