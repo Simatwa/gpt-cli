@@ -629,8 +629,7 @@ class intro_prompt_handler:
         """Displays acts and roles"""
         x = 0
         if args.dump:
-            from json import dumps
-
+            from json import dumps    
             with open(args.dump, "w") as fh:
                 if args.dump in ("keys", "roles", "acts", "act", "role"):
                     from tabulate import tabulate
@@ -652,7 +651,7 @@ class intro_prompt_handler:
                         x += 1
                 elif args.dump in ("show", "pretty", "prettify"):
                     for key, value in resp.items():
-                        print(f"{Fore.MAGENTA}>>[{x}] {key} : {Fore.GREEN}{value}{Fore.RESET}", end="\n\n")
+                        print(f"{config_h.color_dict[args.input_color]}>>[{x}] {key} : {config_h.color_dict[args.output_color]}{value}{Fore.RESET}", end="\n\n")
                         x += 1
                 else:
                     data = json.dumps(resp, indent=4)
