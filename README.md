@@ -25,10 +25,9 @@ CLI tool for interacting with [ChatGPT](https://openai.com).
 - Chat with ChatGPT conversationally.
  - Stream or Non-stream responses
  - Maintain record of the chats
-- Generate Images 
- - Based on your prompt or ChatGPT generated description
+- Generate Images - Based on your prompt or ChatGPT generated description
 - Interact with the system commands on the fly
-- Fully customized Commandline Interface
+- Fully customizable Commandline Interface
 
 ### Prerequisites
 
@@ -212,8 +211,12 @@ optional arguments:
 
 
 ## Motive
-
+<details>
+<summary>
+Love for ❤️
+</summary>
 As a `terminal guy` I used to find it uncomfortable to keep shifting from one window to next in order to access ChatGPT even after trying out the [gpt-login](https://github.com/Simatwa/gpt-login), the rest is [here.](https://github.com/Simatwa/gpt-cli)
+</details>
 
 ## Contributions
 
@@ -222,10 +225,14 @@ As a `terminal guy` I used to find it uncomfortable to keep shifting from one wi
 ### ToDo
 
 - [x] Use dialogue
-- [ ] Send text from a file
+- [ ] Issue prompt from a file
 - [ ] Busy bar
 
 ## Acknowledgements
 
  1. [remo7777](https://github.com/remo7777/T-Header)
- 2. [acheong08](https://github.com/acheong08/ChatGPT)
+ 2.
+[acheong08](https://github.com/acheong08/ChatGPT)
+
+ 3.
+[f](https://github.com/f/awesome-chatgpt-prompts)
