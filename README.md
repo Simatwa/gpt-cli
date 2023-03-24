@@ -230,9 +230,8 @@ As a `terminal guy` I used to find it uncomfortable to keep shifting from one wi
 
 ## Acknowledgements
 
- 1. [remo7777](https://github.com/remo7777/T-Header)
- 2.
-[acheong08](https://github.com/acheong08/ChatGPT)
+1. [remo7777](https://github.com/remo7777/T-Header)
 
- 3.
-[f](https://github.com/f/awesome-chatgpt-prompts)
+2. [acheong08](https://github.com/acheong08/ChatGPT)
+
+3. [f](https://github.com/f/awesome-chatgpt-prompts)
