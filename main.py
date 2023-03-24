@@ -1,6 +1,7 @@
 #!/usr/bin/python
-__version__ = "1.3.0"
+__version__ = "1.3.1"
 __author__ = "Smartwa Caleb"
+__repo__='https://github.com/Simatwa/gpt-cli'
 from colorama import Fore, Back
 from os import getlogin, getcwd, path
 import argparse
@@ -204,7 +205,12 @@ class config_handler:
             default="You are ChatGPT, a large language model trained by OpenAI. Respond conversationally",
             metavar="text",
         )
-        parser.add_argument('-fp','--file-path',help='Path to file .csv containing - [act,prompt]',metavar = 'path')
+        parser.add_argument(
+            "-fp",
+            "--file-path",
+            help="Path to .csv file containing role and prompt - [act,prompt]",
+            metavar="path",
+        )
         parser.add_argument(
             "-o",
             "--output",
@@ -226,6 +232,14 @@ class config_handler:
             default="",
         )
         parser.add_argument(
+            "-dm",
+            "--dump",
+            help="Stdout [keys,values]; Save all prompts in json format to a file",
+            metavar='|'.join(['keys','values','show','{file}']),
+
+        )
+        parser.add_argument('-dl','--delimiter',help='Delimeter for for the .CSV file - [act,prompt]')
+        parser.add_argument(
             "--disable-stream",
             help="Specifies not to stream responses from ChatGPT",
             action="store_true",
@@ -240,8 +254,16 @@ class config_handler:
             help="Disable saving prompts and responses",
             action="store_true",
         )
-        parser.add_argument('--update',help='Download latest prompts - [awesome-chatgpt-prompts]',action='store_true')
-
+        parser.add_argument(
+            "--zero-show",
+            help="Specifies not to stdout prompt of the act parsed",
+            action="store_true",
+        )
+        parser.add_argument(
+            "--update",
+            help="Download latest prompts - [awesome-chatgpt-prompts]",
+            action="store_true",
+        )
         return parser.parse_args()
 
     def set_log(self):
@@ -271,7 +293,10 @@ from os import system, remove, path, environ, makedirs
 from threading import Thread as thr
 from appdirs import AppDirs
 
-app_dir =AppDirs('smartwa','gpt-cli',).user_data_dir
+app_dir = AppDirs(
+    "smartwa",
+    "gpt-cli",
+).user_data_dir
 
 first_time_run = False
 
@@ -294,22 +319,24 @@ class gpt3_interactor:
     def gpt_v1(self, rp: str = None):
         """Utilises GPTv1"""
         if not args.disable_stream:
-            for data in chatbot.ask_stream(args.message, args.temperature,role=args.role):
+            for data in chatbot.ask_stream(
+                args.message, args.temperature, user=args.role
+            ):
                 print(data, end="", flush=True)
                 rp = "".join([rp, data])
         else:
-            rp = chatbot.ask(args.message,role=args.role)
+            rp = chatbot.ask(args.message, user=args.role)
             print(rp)
         return rp
 
     def gpt_v4(self, rp: str = None):
         """Utilises GPTv4"""
         if not args.disable_stream:
-            for data in chatbot.ask_stream(args.message,role=args.role):
+            for data in chatbot.ask_stream(args.message, role=args.role):
                 print(data, end="", flush=True)
                 rp = "".join([rp, data])
         else:
-            rp = chatbot.ask(args.message,role=args.role)
+            rp = chatbot.ask(args.message, role=args.role)
             print(rp)
         return rp
 
@@ -336,7 +363,8 @@ class local_interactor:
 
     def help(self):
         return f"""
-gpt-cli {__version__}
+   gpt-cli {__version__}
+ Repo : {__name__}
 
 ╒═══════╤═══════════════════╤═════════════════════════════════════════════╕
 │   No. │ Command           │ Action                                      │
@@ -559,48 +587,104 @@ class imager:
                 except Exception as e:
                     logging.error(getExc(e))
 
-class intro_prompt_handler:
-    def __init__(self,filename:str=path.join(app_dir,'awesome_prompts')):
-        self.fnm = filename
-        self.links = {'prompts':"https://raw.githubusercontent.com/f/awesome-chatgpt-prompts/main/prompts.csv",
-        'prompts1':"https://raw.githubusercontent.com/Simatwa/gpt-cli/main/prompts.csv"}
-    def update(self) -> list: 
-        from requests import get
-        try:
-            logging.info('Updating acts and prompts')
 
-            for key,value in self.links.items():
+class intro_prompt_handler:
+    """Fetches prompts"""
+    def __init__(self, filename: str = path.join(app_dir, "awesome_prompts")):
+        self.fnm = filename
+        self.links = {
+            "prompts": "https://raw.githubusercontent.com/f/awesome-chatgpt-prompts/main/prompts.csv",
+            "prompts1": "https://raw.githubusercontent.com/Simatwa/gpt-cli/main/prompts.csv",
+        }
+
+    def update(self) -> list:
+        from requests import get
+
+        try:
+            logging.info("Updating acts and prompts")
+
+            for key, value in self.links.items():
                 resp = get(value)
                 if resp.status_code == 200:
-                    with open(path.join(app_dir,key),'w') as fh:
+                    with open(path.join(app_dir, key), "w") as fh:
                         fh.write(resp.text)
                 else:
-                    logging.error(f'Failed to get prompts from "{value}" - [{resp.status_code} : {resp.reason}]')
+                    logging.error(
+                        f'Failed to get prompts from "{value}" - [{resp.status_code} : {resp.reason}]'
+                    )
         except Exception as e:
             logging.error(getExc(e))
 
-    def read_contents(self,filename:str=None,delimiter:str=',',resp:dict = {}):
+    def read_contents(
+        self, filename: str = None, delimiter: str = ",", resp: dict = {}
+    ):
         """Read prompts and return in dict {act:prompt}"""
         import csv
-        with open(filename or self.fnm) as fh:
-            for row in csv.DictReader(fh,delimiter=delimiter):
-                resp[row['act']]=row['prompt']
-        return resp
 
-    def main(self,filepath:str=None):
+        with open(filename or self.fnm) as fh:
+            for row in csv.DictReader(fh, delimiter=delimiter):
+                resp[row["act"]] = row["prompt"]
+        return resp
+    def display_info(self,resp:dict) -> None:
+        """Displays acts and roles"""
+        x = 0
+        if args.dump:
+            from json import dumps
+
+            with open(args.dump, "w") as fh:
+                if args.dump in ("keys", "roles", "acts", "act", "role"):
+                    from tabulate import tabulate
+                    data = []
+                    for key in resp.keys():
+                        data.append([key])
+
+                    print(
+                        tabulate(
+                            data,
+                            headers=["Prompt Keys"],
+                            tablefmt="fancy_grid",
+                            showindex= True
+                        )
+                    )
+                elif args.dump in ("values", "prompts", "value", "prompt"):
+                    for prompt in resp.values():
+                        print(x, ">>", prompt, end="\n\n")
+                        x += 1
+                elif args.dump in ("show", "pretty", "prettify"):
+                    for key, value in resp.items():
+                        print(f"{Fore.MAGENTA}>>[{x}] {key} : {Fore.GREEN}{value}{Fore.RESET}", end="\n\n")
+                        x += 1
+                else:
+                    data = json.dumps(resp, indent=4)
+                    fh.write(data)
+                    print(data)
+                exit(0)
+
+    def main(self, filepath: str = None):
         resp = {}
         try:
-            if any([args.update,first_time_run,not path.isfile(path.join(app_dir,'prompts'))]) :
+            if any(
+                [
+                    args.update,
+                    first_time_run,
+                    not path.isfile(path.join(app_dir, "prompts")),
+                ]
+            ):
                 self.update()
             if filepath:
-                return self.read_contents(filepath)
+                resp = self.read_contents(filepath,args.delimiter or ',')
+                self.display_info(resp)
             else:
-                tpath = lambda fp:path.join(app_dir,fp)
-                resp = self.read_contents(tpath('prompts'))
-                return self.read_contents(tpath('prompts1'),'~',resp)
+                tpath = lambda fp: path.join(app_dir, fp)
+                resp = self.read_contents(tpath("prompts"))
+                resp = self.read_contents(tpath("prompts1"), "~", resp)
+                self.display_info(resp)
+            return resp
+
         except Exception as e:
             logging.error(getExc(e))
             return resp
+
 
 time_now_format = lambda v: str(
     f"{config_h.color_dict[args.prompt_color]}{date_stamp(v)}{config_h.color_dict[args.input_color]}\r\n└──╼ ❯❯❯"
@@ -631,6 +715,7 @@ class main_gpt(cmd.Cmd):
         # out = lambda b: print(self.color_dict[args.output_color] + b + Fore.RESET)
         if raw[0:2] == "./":
             system((raw[2:]).strip())
+            print()
         else:
             if not bool(raw):
                 return
@@ -762,18 +847,47 @@ def get_api_key() -> str:
         except Exception as e:
             exit(logging.critical("While opening Key_Path " + getExc(e)))
 
-def intro_train(error_msg:str='Using default configurations') -> None:
+
+def intro_train(error_msg: str = "Initializing default configurations - Kindly Wait") -> None:
     prompt_dict = intro_prompt_handler().main(args.file_path or None)
-    args.__setattr__('role','default' if args.gpt=='1' else 'user')
-    if args.message in list(prompt_dict.keys()):
+    args.__setattr__("role", "User")
+    args.message = " ".join(args.message) if isinstance(args.message, list) else args.message
+    keys = list(prompt_dict.keys())
+    if str(args.message).isdigit() and (len(keys)-1) >= int(args.message):
+        try:
+            role = keys[int(args.message)]
+            args.message = prompt_dict[role]
+            args.role = role
+            if not args.zero_show:
+                print(f"""    gpt-cli v{__version__}
+Role : {args.role}
+Start-Prompt : {args.message} 
+                 
+                 Repo : {__repo__}
+                 
+                  """)
+            logging.info("Initializing Chat - Kindly Wait")
+        except KeyError:
+            logging.warning(error_msg)
+
+    elif args.message in keys:
         try:
             role = args.message
             args.message = prompt_dict[args.message]
             args.role = role
-        except (KeyError):
+            if not args.zero_show:
+                print(f"""    gpt-cli v{__version__}
+Start-Prompt : {args.message} 
+                 
+                 Repo : {__repo__}
+                 
+                  """)
+            logging.info("Initializing Chat - Kindly Wait")
+        except KeyError:
             logging.warning(error_msg)
     else:
         logging.warning(error_msg)
+
 
 if __name__ == "__main__":
     record_keeper = tracker(args.output)
@@ -793,8 +907,8 @@ if __name__ == "__main__":
             temperature=args.temperature,
             presence_penalty=args.presence_frequency,
             frequency_penalty=args.frequency_penalty,
-            reply_count=args.reply_count,  
-            system_prompt=args.system_prompt,  
+            reply_count=args.reply_count,
+            system_prompt=args.system_prompt,
         )
     else:
         gpt4 = False
