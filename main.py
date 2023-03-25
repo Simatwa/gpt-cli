@@ -33,11 +33,8 @@ class config_handler:
             "gpt-3.5-turbo",
             "gpt-4",
             "gpt-4-32k",
-            "gpt-3.5-turbo",
             "gpt-3.5-turbo-0301",
-            "gpt-4",
             "gpt-4-0314",
-            "gpt-4-32k",
             "gpt-4-32k-031",
         ]
         self.float_range = self.generate_floats()
@@ -54,6 +51,9 @@ class config_handler:
 
     def get_args(self):
         """Gets args parsed"""
+        print(f"""   gpt-cli v{__version__}
+            Repo : {__repo__}
+            By   : {__author__}""")
 
         parser = argparse.ArgumentParser(
             description="Interact with ChatGPT at the terminal"
@@ -84,7 +84,7 @@ class config_handler:
             "--model",
             help="ChatGPT model to be used",
             choices=models + self.v4models,
-            metavar="davinci|curie|babbage",
+            metavar='|'.join(self.v4models[0:3]),
         )
         parser.add_argument(
             "-t",
@@ -100,8 +100,8 @@ class config_handler:
             "--max-tokens",
             help="Maximum number of tokens to be generated upon completion",
             type=int,
-            choices=range(1, 4001),
-            metavar="[1-4000]",
+            choices=range(1, 7001),
+            metavar="[1-7000]",
             default=4000,
         )
         parser.add_argument(
@@ -131,7 +131,7 @@ class config_handler:
             default=0.1,
             metavar="[0.1-2]",
         )
-        parser.add_argument("-k", "--key", help="GPT-API key")
+        parser.add_argument("-k", "--key",help='OPENAI-API-KEY')
         parser.add_argument(
             "-kp",
             "--key-path",
@@ -178,7 +178,7 @@ class config_handler:
             nargs="*",
         )
         parser.add_argument(
-            "-tm", "--timeout", help="Request timeout while making request - (Soon)"
+            "-tm", "--timeout", help="Request timeout while making request - (Soon)",metavar = 'value'
         )
         parser.add_argument("-pr", "--proxy", help="Pivot request through this proxy")
         parser.add_argument(
@@ -216,6 +216,7 @@ class config_handler:
             "--output",
             help=f"Filepath for saving the chats - default [{getcwd()}/.chatgpt-history.txt]",
             default=path.join(getcwd(), ".chatgpt-history.txt"),
+            metavar='path'
         )
         parser.add_argument(
             "-pp",
@@ -235,10 +236,10 @@ class config_handler:
             "-dm",
             "--dump",
             help="Stdout [keys,values]; Save all prompts in json format to a file",
-            metavar='|'.join(['keys','values','show','{file}']),
+            metavar='|'.join(['keys','values','show','{fnm}']),
 
         )
-        parser.add_argument('-dl','--delimiter',help='Delimeter for for the .CSV file - [act,prompt]')
+        parser.add_argument('-dl','--delimiter',help='Delimeter for the .CSV file - [act,prompt]',metavar='symbol')
         parser.add_argument(
             "--disable-stream",
             help="Specifies not to stream responses from ChatGPT",
@@ -852,20 +853,18 @@ def intro_train(error_msg: str = "Initializing default configurations - Kindly W
     args.__setattr__("role", "User")
     args.message = " ".join(args.message) if isinstance(args.message, list) else args.message
     keys = list(prompt_dict.keys())
+    def show_role():
+        print(f"""Role : {args.role}
+Start-Prompt : {args.message} 
+                  """)
+        logging.info("Initializing Chat - Kindly Wait")
     if str(args.message).isdigit() and (len(keys)-1) >= int(args.message):
         try:
             role = keys[int(args.message)]
             args.message = prompt_dict[role]
             args.role = role
             if not args.zero_show:
-                print(f"""    gpt-cli v{__version__}
-Role : {args.role}
-Start-Prompt : {args.message} 
-                 
-                 Repo : {__repo__}
-                 
-                  """)
-            logging.info("Initializing Chat - Kindly Wait")
+                show_role()
         except KeyError:
             logging.warning(error_msg)
 
@@ -875,13 +874,7 @@ Start-Prompt : {args.message}
             args.message = prompt_dict[args.message]
             args.role = role
             if not args.zero_show:
-                print(f"""    gpt-cli v{__version__}
-Start-Prompt : {args.message} 
-                 
-                 Repo : {__repo__}
-                 
-                  """)
-            logging.info("Initializing Chat - Kindly Wait")
+                show_role()
         except KeyError:
             logging.warning(error_msg)
     else:
@@ -891,7 +884,6 @@ Start-Prompt : {args.message}
 if __name__ == "__main__":
     record_keeper = tracker(args.output)
     args.api_key = get_api_key()
-    intro_train()
     openai.api_key = args.api_key
     if args.gpt in ("4"):
         from revChatGPT.V3 import Chatbot
@@ -907,7 +899,7 @@ if __name__ == "__main__":
             presence_penalty=args.presence_frequency,
             frequency_penalty=args.frequency_penalty,
             reply_count=args.reply_count,
-            system_prompt=args.system_prompt,
+            system_prompt=args.system_prompt if args.system_prompt is str else ' '.join(args.system_prompt)
         )
     else:
         gpt4 = False
@@ -919,7 +911,7 @@ if __name__ == "__main__":
             remove(args.output)
         run = main_gpt()
         if args.message:
-            run.default(" ".join(args.message))
+            run.default(" ".join(args.message) if args.message is list else args.message)
         run.cmdloop()
     except (KeyboardInterrupt, EOFError):
         exit(logging.info("Stopping program"))
