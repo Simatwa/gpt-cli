@@ -1,7 +1,7 @@
 #!/usr/bin/python
 __version__ = "1.3.1"
 __author__ = "Smartwa Caleb"
-__repo__='https://github.com/Simatwa/gpt-cli'
+__repo__ = "https://github.com/Simatwa/gpt-cli"
 from colorama import Fore, Back
 from os import getlogin, getcwd, path
 import argparse
@@ -51,9 +51,11 @@ class config_handler:
 
     def get_args(self):
         """Gets args parsed"""
-        print(f"""   gpt-cli v{__version__}
+        print(
+            f"""   gpt-cli v{__version__}
             Repo : {__repo__}
-            By   : {__author__}""")
+            By   : {__author__}"""
+        )
 
         parser = argparse.ArgumentParser(
             description="Interact with ChatGPT at the terminal"
@@ -84,7 +86,7 @@ class config_handler:
             "--model",
             help="ChatGPT model to be used",
             choices=models + self.v4models,
-            metavar='|'.join(self.v4models[0:3]),
+            metavar="|".join(self.v4models[0:3]),
         )
         parser.add_argument(
             "-t",
@@ -131,7 +133,7 @@ class config_handler:
             default=0.1,
             metavar="[0.1-2]",
         )
-        parser.add_argument("-k", "--key",help='OPENAI-API-KEY')
+        parser.add_argument("-k", "--key", help="OPENAI-API-KEY")
         parser.add_argument(
             "-kp",
             "--key-path",
@@ -178,7 +180,10 @@ class config_handler:
             nargs="*",
         )
         parser.add_argument(
-            "-tm", "--timeout", help="Request timeout while making request - (Soon)",metavar = 'value'
+            "-tm",
+            "--timeout",
+            help="Request timeout while making request - (Soon)",
+            metavar="value",
         )
         parser.add_argument("-pr", "--proxy", help="Pivot request through this proxy")
         parser.add_argument(
@@ -216,7 +221,7 @@ class config_handler:
             "--output",
             help=f"Filepath for saving the chats - default [{getcwd()}/.chatgpt-history.txt]",
             default=path.join(getcwd(), ".chatgpt-history.txt"),
-            metavar='path'
+            metavar="path",
         )
         parser.add_argument(
             "-pp",
@@ -236,10 +241,14 @@ class config_handler:
             "-dm",
             "--dump",
             help="Stdout [keys,values]; Save all prompts in json format to a file",
-            metavar='|'.join(['keys','values','show','{fnm}']),
-
+            metavar="|".join(["keys", "values", "show", "{fnm}"]),
         )
-        parser.add_argument('-dl','--delimiter',help='Delimeter for the .CSV file - [act,prompt]',metavar='symbol')
+        parser.add_argument(
+            "-dl",
+            "--delimiter",
+            help="Delimeter for the .CSV file - [act,prompt]",
+            metavar="symbol",
+        )
         parser.add_argument(
             "--disable-stream",
             help="Specifies not to stream responses from ChatGPT",
@@ -591,6 +600,7 @@ class imager:
 
 class intro_prompt_handler:
     """Fetches prompts"""
+
     def __init__(self, filename: str = path.join(app_dir, "awesome_prompts")):
         self.fnm = filename
         self.links = {
@@ -626,14 +636,17 @@ class intro_prompt_handler:
             for row in csv.DictReader(fh, delimiter=delimiter):
                 resp[row["act"]] = row["prompt"]
         return resp
-    def display_info(self,resp:dict) -> None:
+
+    def display_info(self, resp: dict) -> None:
         """Displays acts and roles"""
         x = 0
         if args.dump:
-            from json import dumps    
+            from json import dumps
+
             with open(args.dump, "w") as fh:
                 if args.dump in ("keys", "roles", "acts", "act", "role"):
                     from tabulate import tabulate
+
                     data = []
                     for key in resp.keys():
                         data.append([key])
@@ -643,7 +656,7 @@ class intro_prompt_handler:
                             data,
                             headers=["Prompt Keys"],
                             tablefmt="fancy_grid",
-                            showindex= True
+                            showindex=True,
                         )
                     )
                 elif args.dump in ("values", "prompts", "value", "prompt"):
@@ -652,7 +665,10 @@ class intro_prompt_handler:
                         x += 1
                 elif args.dump in ("show", "pretty", "prettify"):
                     for key, value in resp.items():
-                        print(f"{config_h.color_dict[args.input_color]}>>[{x}] {key} : {config_h.color_dict[args.output_color]}{value}{Fore.RESET}", end="\n\n")
+                        print(
+                            f"{config_h.color_dict[args.input_color]}>>[{x}] {key} : {config_h.color_dict[args.output_color]}{value}{Fore.RESET}",
+                            end="\n\n",
+                        )
                         x += 1
                 else:
                     data = json.dumps(resp, indent=4)
@@ -672,7 +688,7 @@ class intro_prompt_handler:
             ):
                 self.update()
             if filepath:
-                resp = self.read_contents(filepath,args.delimiter or ',')
+                resp = self.read_contents(filepath, args.delimiter or ",")
                 self.display_info(resp)
             else:
                 tpath = lambda fp: path.join(app_dir, fp)
@@ -848,23 +864,32 @@ def get_api_key() -> str:
             exit(logging.critical("While opening Key_Path " + getExc(e)))
 
 
-def intro_train(error_msg: str = "Initializing default configurations - Kindly Wait") -> None:
+def intro_train(
+    error_msg: str = "Initializing default configurations - Kindly Wait",
+) -> None:
     prompt_dict = intro_prompt_handler().main(args.file_path or None)
     args.__setattr__("role", "User")
-    args.message = " ".join(args.message) if isinstance(args.message, list) else args.message
+    args.message = (
+        " ".join(args.message) if isinstance(args.message, list) else args.message
+    )
     keys = list(prompt_dict.keys())
+
     def show_role():
-        print(f"""Role : {args.role}
+        print(
+            f"""Role : {args.role}
 Start-Prompt : {args.message} 
-                  """)
+                  """
+        )
         logging.info("Initializing Chat - Kindly Wait")
-    if str(args.message).isdigit() and (len(keys)-1) >= int(args.message):
+
+    if str(args.message).isdigit() and (len(keys) - 1) >= int(args.message):
         try:
             role = keys[int(args.message)]
             args.message = prompt_dict[role]
             args.role = role
             if not args.zero_show:
                 show_role()
+            return True
         except KeyError:
             logging.warning(error_msg)
 
@@ -875,6 +900,7 @@ Start-Prompt : {args.message}
             args.role = role
             if not args.zero_show:
                 show_role()
+            return True
         except KeyError:
             logging.warning(error_msg)
     else:
@@ -884,6 +910,7 @@ Start-Prompt : {args.message}
 if __name__ == "__main__":
     record_keeper = tracker(args.output)
     args.api_key = get_api_key()
+    predefined_prompt_used = intro_train()
     openai.api_key = args.api_key
     if args.gpt in ("4"):
         from revChatGPT.V3 import Chatbot
@@ -899,7 +926,9 @@ if __name__ == "__main__":
             presence_penalty=args.presence_frequency,
             frequency_penalty=args.frequency_penalty,
             reply_count=args.reply_count,
-            system_prompt=args.system_prompt if args.system_prompt is str else ' '.join(args.system_prompt)
+            system_prompt=args.system_prompt
+            if args.system_prompt is str
+            else " ".join(args.system_prompt),
         )
     else:
         gpt4 = False
@@ -911,7 +940,9 @@ if __name__ == "__main__":
             remove(args.output)
         run = main_gpt()
         if args.message:
-            run.default(" ".join(args.message) if args.message is list else args.message)
+            run.default(
+                " ".join(args.message) if args.message is list else args.message
+            )
         run.cmdloop()
     except (KeyboardInterrupt, EOFError):
         exit(logging.info("Stopping program"))
