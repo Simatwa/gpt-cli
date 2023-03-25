@@ -126,7 +126,7 @@ Run `$ gpt-cli --dump show` to view the act,prompt and their **indexes**
  - e.g ```load DAN.json```
 
 7._save : Save the current Chat Configurations
- - e.g ```load DAN.json```
+ - e.g ```save DAN.json```
 
 8._rollback : Rollback the Chat by the {n} time(s)
  - e.g ```_rollback 2```
