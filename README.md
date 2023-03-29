@@ -23,11 +23,12 @@ CLI tool for interacting with [ChatGPT](https://openai.com).
 ### Features
 
 - Chat with ChatGPT conversationally.
- - Stream or Non-stream responses
- - Maintain record of the chats
+- Stream or Non-stream responses
+- Maintain record of the chats
 - Generate Images - Based on your prompt or ChatGPT generated description
-- Interact with the system commands on the fly
+- Parse [awesome-chatgpt-prompts](https://github.com/f/awesome-chatgpt-prompts) easily
 - Fully customizable Commandline Interface
+- Interact with system commands on the fly
 
 ### Prerequisites
 
