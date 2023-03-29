@@ -43,7 +43,7 @@ Either of the following ways will get you ready.
  $ sudo pip install git+https://github.com/Simatwa/gpt-cli.git
  ```
 
-2. Running the following commands at the `terminal` will get you ready.
+2. Cloning locally and install
 
 ```sh
 $ git clone https://github.com/Simatwa/gpt-cli.git
