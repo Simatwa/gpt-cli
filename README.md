@@ -39,7 +39,15 @@ CLI tool for interacting with [ChatGPT](https://openai.com).
 
 Either of the following ways will get you ready.
 
-1. Installing through pip from source:
+1. Using pip
+
+- From pypi
+
+```sh
+$ sudo pip install chatgpt4-cli
+```
+
+- Installing from source
  
  ```sh
  $ sudo pip install git+https://github.com/Simatwa/gpt-cli.git
