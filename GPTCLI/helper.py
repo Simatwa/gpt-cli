@@ -1,4 +1,4 @@
-from .import __version__,__repo__
+from . import __version__, __repo__
 
 from os import getlogin
 

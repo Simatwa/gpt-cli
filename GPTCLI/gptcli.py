@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from . import __version__,__author__,__repo__
+from . import __version__, __author__, __repo__
 from colorama import Fore, Back
 from os import getlogin, getcwd, path
 from rich.console import Console
@@ -53,11 +53,11 @@ class config_handler:
 
     def get_args(self):
         """Gets args parsed"""
-        disp=f"""
+        disp = f"""
             Repo : {__repo__}
             By   : {__author__}"""
-        gstyle=Style(color='cyan',frame='double')
-        intro=Panel(disp,title=f"gpt-cli v{__version__}",style=gstyle)
+        gstyle = Style(color="cyan", frame="double")
+        intro = Panel(disp, title=f"gpt-cli v{__version__}", style=gstyle)
         rich_print(intro)
 
         parser = argparse.ArgumentParser(
@@ -252,7 +252,12 @@ class config_handler:
             help="Delimeter for the .CSV file - [act,prompt]",
             metavar="symbol",
         )
-        parser.add_argument('-cf','--cookie-file',help="Path to Bing's cookies - for Edge Image Generation",metavar='path')
+        parser.add_argument(
+            "-cf",
+            "--cookie-file",
+            help="Path to Bing's cookies - for Edge Image Generation",
+            metavar="path",
+        )
         parser.add_argument(
             "--disable-stream",
             help="Specifies not to stream responses from ChatGPT",
@@ -274,6 +279,11 @@ class config_handler:
             action="store_true",
         )
         parser.add_argument(
+            "--markdown",
+            help="Stdout responses in markdown-format - disables streaming",
+            action="store_true",
+        )
+        parser.add_argument(
             "--update",
             help="Download latest prompts - [awesome-chatgpt-prompts]",
             action="store_true",
@@ -290,7 +300,7 @@ from sys import exit, stderr
 import json
 import openai
 import cmd
-from . import logging,getExc
+from . import logging, getExc
 from .image import imager
 from .emage import emager
 from re import sub
@@ -298,6 +308,7 @@ from datetime import datetime
 from os import system, remove, path, environ, makedirs
 from threading import Thread as thr
 from appdirs import AppDirs
+from rich.markdown import Markdown
 
 app_dir = AppDirs(
     "smartwa",
@@ -318,7 +329,7 @@ if not path.isdir(app_dir):
 
 class gpt3_interactor:
     def __init__(self):
-        pass
+        self.out = lambda rp: rich_print(Markdown(rp)) if args.markdown else print(rp)
 
     def gpt_v1(self, rp: str = None):
         """Utilises GPTv1"""
@@ -330,7 +341,7 @@ class gpt3_interactor:
                 rp = "".join([rp, data])
         else:
             rp = chatbot.ask(args.message, user=args.role)
-            print(rp)
+            self.out(rp)
         return rp
 
     def gpt_v4(self, rp: str = None):
@@ -341,7 +352,7 @@ class gpt3_interactor:
                 rp = "".join([rp, data])
         else:
             rp = chatbot.ask(args.message, role=args.role)
-            print(rp)
+            self.out(rp)
         return rp
 
     def main(self):
@@ -364,6 +375,7 @@ class local_interactor:
     def __init__(self):
         self.special_input = {}
         self.run = lambda key: self.special_input[key]()
+
 
 class tracker:
     """Keeps track of the prompts & responses"""
@@ -548,8 +560,11 @@ class main_gpt(cmd.Cmd):
         imagiser = imager(line.split(" "))
         description = self.default(imagiser.args.prompt, return_fb=True)
         if description:
-            imagiser.args.prompt = description.strip()
-            imagiser.main()
+            if imagiser.args.emg:
+                self.do_emg(description.strip())
+            else:
+                imagiser.args.prompt = description.strip()
+                imagiser.main()
 
         else:
             logging.error("Failed to generate description.")
@@ -560,14 +575,14 @@ class main_gpt(cmd.Cmd):
         if isinstance(resp, dict):
             args.message = line
             record_keeper.main(str(resp["url"]))
-    
-    def do_emg(self,line):
+
+    def do_emg(self, line):
         if args.cookie_file:
-            emg_args=imager(line.split(' ')).args
-            emg_args.__setattr__('cookie_file',args.cookie_file)
+            emg_args = imager(line.split(" ")).args
+            emg_args.__setattr__("cookie_file", args.cookie_file)
             emager(emg_args).main()
         else:
-            logging.warning('Cookie file is required at launch [--cookie-file {path}]')
+            logging.warning("Cookie file is required at launch [--cookie-file {path}]")
 
     def do__prompt(self, line):
         """Modify prompts"""
@@ -651,7 +666,9 @@ class main_gpt(cmd.Cmd):
 
     def do__help(self, line):
         from .helper import help
+
         print(help)
+
 
 def get_api_key() -> str:
     """Gets API from Key_path or args.key"""
@@ -707,8 +724,10 @@ Start-Prompt : {args.message}
     else:
         logging.warning(error_msg)
 
+
 def main():
-    global chatbot,gpt4,record_keeper
+    global chatbot, gpt4, record_keeper
+    args.stream = None if args.markdown else args.stream
     record_keeper = tracker(args.output)
     args.api_key = get_api_key()
     predefined_prompt_used = intro_train()
@@ -749,5 +768,7 @@ def main():
         exit(logging.info("Stopping program"))
     except Exception as e:
         print(getExc(e))
+
+
 if __name__ == "__main__":
     main()

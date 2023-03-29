@@ -8,6 +8,6 @@ logging.basicConfig(
     format="%(levelname)s - %(message)s - (%(asctime)s)",
     datefmt="%d-%b-%Y %H:%M:%S",
     level=logging.INFO,
-    )
+)
 
 getExc = lambda e: e.args[1] if isinstance(e.args, list) else str(e)

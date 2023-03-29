@@ -1,7 +1,8 @@
 import openai
 import argparse
 from os import path
-from . import logging,getExc
+from . import logging, getExc
+
 
 class imager:
     """Handles image generation"""
@@ -9,13 +10,15 @@ class imager:
     def __init__(self, commands: list):
         self.args = self.get_args(commands)
         if type(self.args.prompt) is list:
-            self.args.prompt = " ".join(self.args.prompt) 
+            self.args.prompt = " ".join(self.args.prompt)
         self.image_buff = self.image_saver(self.args, [])
 
     def get_args(self, args):
         resolutions = ["256x256", "512x512", "1024x1024"]
         dir = path.join(path.expanduser("~"), "Downloads/GPT")
-        parser = argparse.ArgumentParser(description="Text-to-Image Converter - ChatGPT")
+        parser = argparse.ArgumentParser(
+            description="Text-to-Image Converter - ChatGPT"
+        )
         parser.add_argument("prompt", help="Description of the image", nargs="*")
         parser.add_argument(
             "-f", "--file", help="Path to text-file containing the description"
@@ -44,6 +47,11 @@ class imager:
         )
         parser.add_argument(
             "--url", help="Get url for the images only, not images", action="store_true"
+        )
+        parser.add_argument(
+            "--emg",
+            action="store_true",
+            help="Specifies to use EdgeGPT for image generation",
         )
         return parser.parse_args(args=args)
 
@@ -79,7 +87,7 @@ class imager:
     class image_saver:
         """Receives urls, query and save the contents"""
 
-        def __init__(self, args: object, urls: list,session:object=False):
+        def __init__(self, args: object, urls: list, session: object = False):
             self.args = args
             self.urls = urls
             self.save_count = 0
@@ -124,7 +132,11 @@ class imager:
                     end="\r",
                 )
                 try:
-                    resp = get(link, timeout=60) if not self.session else self.session.get(link, timeout=60)
+                    resp = (
+                        get(link, timeout=60)
+                        if not self.session
+                        else self.session.get(link, timeout=60)
+                    )
                     if resp.status_code == 200:
                         self.write_buff(resp.content)
                     else:
@@ -140,18 +152,20 @@ class imager:
 
 def main():
     from sys import argv
+
     start = imager(argv[1:])
     while True:
         try:
-            start.args.prompt = input('>>[ChatGPT-ImageGen]:')
+            start.args.prompt = input(">>[ChatGPT-ImageGen]:")
             start.main()
         except KeyboardInterrupt:
-            print('')
+            print("")
             continue
         except EOFError:
-            exit(logging.error('Exitting...'))
+            exit(logging.error("Exitting..."))
         except Exception as e:
             logging.error(getExc(e))
+
 
 if __name__ == "__main__":
     main()

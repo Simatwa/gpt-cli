@@ -5,7 +5,7 @@ import urllib
 
 import regex
 import requests
-from . import logging,getExc
+from . import logging, getExc
 from .image import imager
 
 BING_URL = "https://www.bing.com"
@@ -37,19 +37,19 @@ class ImageGen:
         Parameters:
             prompt: str
         """
-        print("Sending request...",end='\r')
+        print("Sending request...", end="\r")
         url_encoded_prompt = urllib.parse.quote(prompt)
         # https://www.bing.com/images/create?q=<PROMPT>&rt=3&FORM=GENCRE
         url = f"{BING_URL}/images/create?q={url_encoded_prompt}&rt=4&FORM=GENCRE"
         response = self.session.post(url, allow_redirects=False)
         if response.status_code != 302:
-            #if rt4 fails, try rt3
-            url= f"{BING_URL}/images/create?q={url_encoded_prompt}&rt=3&FORM=GENCRE"
+            # if rt4 fails, try rt3
+            url = f"{BING_URL}/images/create?q={url_encoded_prompt}&rt=3&FORM=GENCRE"
             response3 = self.session.post(url, allow_redirects=False, timeout=200)
             if response3.status_code != 302:
-                    logging.error(response3.text)
-                    raise Exception("Redirect failed")
-            response=response3
+                logging.error(response3.text)
+                raise Exception("Redirect failed")
+            response = response3
         # Get redirect URL
         redirect_url = response.headers["Location"].replace("&nfy=1", "")
         request_id = redirect_url.split("id=")[-1]
@@ -57,7 +57,7 @@ class ImageGen:
         # https://www.bing.com/images/create/async/results/{ID}?q={PROMPT}
         polling_url = f"{BING_URL}/images/create/async/results/{request_id}?q={url_encoded_prompt}"
         # Poll for results
-        print("Waiting for results...",end='\r')
+        print("Waiting for results...", end="\r")
         start_wait = time.time()
         while True:
             if int(time.time() - start_wait) > 300:
@@ -83,7 +83,7 @@ class ImageGen:
         """
         Saves images to output directory
         """
-        print("\nDownloading images...",end='\r')
+        print("\nDownloading images...", end="\r")
         try:
             os.makedirs(output_dir)
         except FileExistsError:
@@ -100,38 +100,42 @@ class ImageGen:
 
                 image_num += 1
         except requests.exceptions.MissingSchema as url_exception:
-            raise Exception('Inappropriate contents found in the generated images. Please try again or try another prompt.') from url_exception
+            raise Exception(
+                "Inappropriate contents found in the generated images. Please try again or try another prompt."
+            ) from url_exception
+
 
 class emager:
     """Receives args and controls the image gen process"""
-    def __init__(self,args:object):
-        self.args=args
-    
+
+    def __init__(self, args: object):
+        self.args = args
+
     def main(self):
-        #prompt,file,number,size,dir,output, dir, url
-        if self.args.file :
+        # prompt,file,number,size,dir,output, dir, url
+        if self.args.file:
             self.get_prompt_from_file()
         auth = self.get_U()
-        if not auth :
-            return logging.error('Unable to find auth from cookie')
+        if not auth:
+            return logging.error("Unable to find auth from cookie")
         imageGen = ImageGen(auth)
         urls = imageGen.get_images(self.args.prompt)
-        if isinstance(urls,list):
-            img_handler = imager.image_saver(self.args,urls,imageGen.session)
+        if isinstance(urls, list):
+            img_handler = imager.image_saver(self.args, urls, imageGen.session)
         else:
-            logging.error(f'Failed to get image urls - {urls}')
+            logging.error(f"Failed to get image urls - {urls}")
         if img_handler.save():
             """Recurse the function to meet total number of args"""
-            logging.debug('Recursing main function in emager')
+            logging.debug("Recursing main function in emager")
             return self.main()
-    
+
     def get_prompt_from_file(self):
         try:
             with open(self.args.cookie_file) as fh:
                 self.args.prompt = fh.read()
         except Exception as e:
-            logging.error('Failed to load prompt from file -' + getExc(e))
-    
+            logging.error("Failed to load prompt from file -" + getExc(e))
+
     def get_U(self):
         try:
             with open(self.args.cookie_file, encoding="utf-8") as file:
@@ -141,27 +145,33 @@ class emager:
                         return cookie.get("value")
         except Exception as e:
             logging.error(getExc(e))
-    
+
+
 def main():
     import argparse
 
     parser = argparse.ArgumentParser(
-        description='Text-To-Image Converter - EdgeGPT (DALL-E)'
-        )
-    parser.add_argument(
-        "prompt",
-        help="Prompt to generate images for",
-        type=str,
-        nargs='+'
+        description="Text-To-Image Converter - EdgeGPT (DALL-E)"
     )
-    parser.add_argument("-U","--auth",metavar='AUTH',help="Auth cookie from browser", type=str)
-    parser.add_argument("-cf","--cookie-file",metavar='PATH',help="File containing auth cookie", type=str)
+    parser.add_argument(
+        "prompt", help="Prompt to generate images for", type=str, nargs="+"
+    )
+    parser.add_argument(
+        "-U", "--auth", metavar="AUTH", help="Auth cookie from browser", type=str
+    )
+    parser.add_argument(
+        "-cf",
+        "--cookie-file",
+        metavar="PATH",
+        help="File containing auth cookie",
+        type=str,
+    )
     parser.add_argument(
         "-d",
         "--dir",
         dest="output_dir",
         help="Output directory",
-        metavar='PATH',
+        metavar="PATH",
         type=str,
         default=os.path.join(os.path.expanduser("~"), "Downloads/GPT"),
     )
@@ -180,10 +190,11 @@ def main():
     # Create image generator
     image_generator = ImageGen(args.U)
     image_generator.save_images(
-        image_generator.get_images(' '.join(args.prompt)),
+        image_generator.get_images(" ".join(args.prompt)),
         output_dir=args.output_dir,
     )
- 
+
+
 if __name__ == "__main__":
     try:
         main()
