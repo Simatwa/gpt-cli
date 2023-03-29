@@ -48,7 +48,7 @@ class ImageGen:
             response3 = self.session.post(url, allow_redirects=False, timeout=200)
             if response3.status_code != 302:
                 logging.error(response3.text)
-                raise Exception("Redirect failed")
+                logging.warning("Redirect failed")
             response = response3
         # Get redirect URL
         redirect_url = response.headers["Location"].replace("&nfy=1", "")
