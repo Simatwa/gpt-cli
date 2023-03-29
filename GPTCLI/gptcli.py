@@ -580,6 +580,7 @@ class main_gpt(cmd.Cmd):
             record_keeper.main('\n'.join(resp["url"]))
 
     def do_emg(self, line):
+        print(self.color_dict[args.input_color],end='\r')
         if args.cookie_file:
             emg_args = imager(line.split(" ")).args
             emg_args.__setattr__("cookie_file", args.cookie_file)
