@@ -1,4 +1,4 @@
-__version__ = "1.4.2"
+__version__ = "1.4.3"
 __author__ = "Smartwa Caleb"
 __repo__ = "https://github.com/Simatwa/gpt-cli"
 

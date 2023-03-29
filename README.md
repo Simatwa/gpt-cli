@@ -187,16 +187,16 @@ For more info run `$gpt-cli-image -h` or `$gpt-cli-emage -h`.
   </summary>
 
 ```
-usage: main.py [-h] [-v] [-m davinci|curie|babbage] [-t [0.1-1]]
-               [-mt [1-4000]] [-tp [0.1-1]] [-f [0.1-2]] [-p [0.1-2]] [-k KEY]
+usage: gpt-cli [-h] [-v] [-m gpt-3.5-turbo|gpt-4|gpt-4-32k] [-t [0.1-1]]
+               [-mt [1-7000]] [-tp [0.1-1]] [-f [0.1-2]] [-p [0.1-2]] [-k KEY]
                [-kp path] [-ic [cyan|green|yellow|red]]
                [-oc [cyan|green|yellow|red]] [-bc [blue,magenta,black,reset]]
                [-pc [cyan|green|yellow|red]] [--prompt [SETTINGS ...]]
-               [-tm TIMEOUT] [-pr PROXY] [-rc value] [-g 1,4] [-sp [text ...]]
-               [-fp path] [-o OUTPUT] [-pp prefix] [-rp prefix]
-               [-dm keys|values|show|{file}] [-dl DELIMITER]
+               [-tm value] [-pr PROXY] [-rc value] [-g 1,4] [-sp [text ...]]
+               [-fp path] [-o path] [-pp prefix] [-rp prefix]
+               [-dm keys|values|show|{fnm}] [-dl symbol] [-cf path]
                [--disable-stream] [--new-record] [--disable-recording]
-               [--zero-show] [--update]
+               [--zero-show] [--markdown] [--update]
                [message ...]
 
 Interact with ChatGPT at the terminal
@@ -207,11 +207,11 @@ positional arguments:
 optional arguments:
   -h, --help            show this help message and exit
   -v, --version         show program's version number and exit
-  -m davinci|curie|babbage, --model davinci|curie|babbage
+  -m gpt-3.5-turbo|gpt-4|gpt-4-32k, --model gpt-3.5-turbo|gpt-4|gpt-4-32k
                         ChatGPT model to be used
   -t [0.1-1], --temperature [0.1-1]
                         Charge of the generated text's randomness
-  -mt [1-4000], --max-tokens [1-4000]
+  -mt [1-7000], --max-tokens [1-7000]
                         Maximum number of tokens to be generated upon
                         completion
   -tp [0.1-1], --top-p [0.1-1]
@@ -220,7 +220,7 @@ optional arguments:
                         Chances of word being repeated
   -p [0.1-2], --presence-frequency [0.1-2]
                         Chances of topic being repeated
-  -k KEY, --key KEY     GPT-API key
+  -k KEY, --key KEY     OPENAI-API-KEY
   -kp path, --key-path path
                         Path to text-file containing GPT-api key
   -ic [cyan|green|yellow|red], --input-color [cyan|green|yellow|red]
@@ -233,7 +233,7 @@ optional arguments:
                         Prompt's display color
   --prompt [SETTINGS ...]
                         Customizes the prompt display
-  -tm TIMEOUT, --timeout TIMEOUT
+  -tm value, --timeout value
                         Request timeout while making request - (Soon)
   -pr PROXY, --proxy PROXY
                         Pivot request through this proxy
@@ -245,7 +245,7 @@ optional arguments:
   -fp path, --file-path path
                         Path to .csv file containing role and prompt -
                         [act,prompt]
-  -o OUTPUT, --output OUTPUT
+  -o path, --output path
                         Filepath for saving the chats - default
                         [/home/smartwa/git/gpt-cli/.chatgpt-history.txt]
   -pp prefix, --prompt-prefix prefix
@@ -254,15 +254,19 @@ optional arguments:
   -rp prefix, --response-prefix prefix
                         Text to append before saving each response - default
                         [None]
-  -dm keys|values|show|{file}, --dump keys|values|show|{file}
+  -dm keys|values|show|{fnm}, --dump keys|values|show|{fnm}
                         Stdout [keys,values]; Save all prompts in json format
                         to a file
-  -dl DELIMITER, --delimiter DELIMITER
-                        Delimeter for for the .CSV file - [act,prompt]
+  -dl symbol, --delimiter symbol
+                        Delimeter for the .CSV file - [act,prompt]
+  -cf path, --cookie-file path
+                        Path to Bing's cookies - for Edge Image Generation
   --disable-stream      Specifies not to stream responses from ChatGPT
   --new-record          Override previous chats under the filepath
   --disable-recording   Disable saving prompts and responses
   --zero-show           Specifies not to stdout prompt of the act parsed
+  --markdown            Stdout responses in markdown-format - disables
+                        streaming
   --update              Download latest prompts - [awesome-chatgpt-prompts]
 
 ```
