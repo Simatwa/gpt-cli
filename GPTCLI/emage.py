@@ -114,22 +114,25 @@ class emager:
 
     def main(self):
         # prompt,file,number,size,dir,output, dir, url
-        if self.args.file:
-            self.get_prompt_from_file()
-        auth = self.get_U()
-        if not auth:
-            return logging.error("Unable to find auth from cookie")
-        imageGen = ImageGen(auth)
-        urls = imageGen.get_images(self.args.prompt)
-        if isinstance(urls, list):
-            self.urls.extend(urls)
-            img_handler = imager.image_saver(self.args, urls, imageGen.session)
-        else:
-            logging.error(f"Failed to get image urls - {urls}")
-        if img_handler.save():
-            """Recurse the function to meet total number of args"""
-            logging.debug("Recursing main function in emager")
-            return self.main()
+        try:
+            if self.args.file:
+                self.get_prompt_from_file()
+            auth = self.get_U()
+            if not auth:
+                return logging.error("Unable to find auth from cookie")
+            imageGen = ImageGen(auth)
+            urls = imageGen.get_images(self.args.prompt)
+            if isinstance(urls, list):
+                self.urls.extend(urls)
+                img_handler = imager.image_saver(self.args, urls, imageGen.session)
+            else:
+                logging.error(f"Failed to get image urls - {urls}")
+            if img_handler.save():
+                """Recurse the function to meet total number of args"""
+                logging.debug("Recursing main function in emager")
+                return self.main()
+        except Exception as e:
+            logging.error(getExc(e))
 
     def get_prompt_from_file(self):
         try:
