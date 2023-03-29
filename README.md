@@ -40,7 +40,6 @@ CLI tool for interacting with [ChatGPT](https://openai.com).
 Either of the following ways will get you ready.
 
 1. Using pip
-
 - From pypi
 
 ```sh

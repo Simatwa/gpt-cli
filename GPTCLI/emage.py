@@ -110,6 +110,7 @@ class emager:
 
     def __init__(self, args: object):
         self.args = args
+        self.urls = []
 
     def main(self):
         # prompt,file,number,size,dir,output, dir, url
@@ -121,6 +122,7 @@ class emager:
         imageGen = ImageGen(auth)
         urls = imageGen.get_images(self.args.prompt)
         if isinstance(urls, list):
+            self.urls.extend(urls)
             img_handler = imager.image_saver(self.args, urls, imageGen.session)
         else:
             logging.error(f"Failed to get image urls - {urls}")

@@ -446,40 +446,41 @@ class intro_prompt_handler:
         """Displays acts and roles"""
         x = 0
         if args.dump:
-            from json import dumps
 
-            with open(args.dump, "w") as fh:
-                if args.dump in ("keys", "roles", "acts", "act", "role"):
-                    from tabulate import tabulate
+            #with open(args.dump, "w") as fh:
+            if args.dump in ("keys", "roles", "acts", "act", "role"):
+                from tabulate import tabulate
 
-                    data = []
-                    for key in resp.keys():
-                        data.append([key])
+                data = []
+                for key in resp.keys():
+                    data.append([key])
 
-                    print(
-                        tabulate(
-                            data,
-                            headers=["Prompt Keys"],
-                            tablefmt="fancy_grid",
-                            showindex=True,
-                        )
+                print(
+                    tabulate(
+                        data,
+                        headers=["Prompt Keys"],
+                        tablefmt="fancy_grid",
+                        showindex=True,
                     )
-                elif args.dump in ("values", "prompts", "value", "prompt"):
-                    for prompt in resp.values():
-                        print(x, ">>", prompt, end="\n\n")
-                        x += 1
-                elif args.dump in ("show", "pretty", "prettify"):
-                    for key, value in resp.items():
-                        print(
-                            f"{config_h.color_dict[args.input_color]}>>[{x}] {key} : {config_h.color_dict[args.output_color]}{value}{Fore.RESET}",
-                            end="\n\n",
-                        )
-                        x += 1
-                else:
+                )
+            elif args.dump in ("values", "prompts", "value", "prompt"):
+                for prompt in resp.values():
+                    print(x, ">>", prompt, end="\n\n")
+                    x += 1
+            elif args.dump in ("show", "pretty", "prettify"):
+                for key, value in resp.items():
+                    print(
+                        f"{config_h.color_dict[args.input_color]}>>[{x}] {key} : {config_h.color_dict[args.output_color]}{value}{Fore.RESET}",
+                        end="\n\n",
+                    )
+                    x += 1
+            else:
+                with open(args.dump, "w") as fh:
+                    from json import dumps
                     data = json.dumps(resp, indent=4)
                     fh.write(data)
                     print(data)
-                exit(0)
+            exit(0)
 
     def main(self, filepath: str = None):
         resp = {}
@@ -575,13 +576,16 @@ class main_gpt(cmd.Cmd):
         resp = imager(line.split(" ")).main()
         if isinstance(resp, dict):
             args.message = line
-            record_keeper.main(str(resp["url"]))
+            record_keeper.main('\n'.join(resp["url"]))
 
     def do_emg(self, line):
         if args.cookie_file:
             emg_args = imager(line.split(" ")).args
             emg_args.__setattr__("cookie_file", args.cookie_file)
-            emager(emg_args).main()
+            download = emager(emg_args)
+            download.main()
+            args.message=line
+            record_keeper.main('\n'.join(download.urls))
         else:
             logging.warning("Cookie file is required at launch [--cookie-file {path}]")
 
@@ -694,11 +698,8 @@ def intro_train(
     keys = list(prompt_dict.keys())
 
     def show_role():
-        print(
-            f"""Role : {args.role}
-Start-Prompt : {args.message} 
-                  """
-        )
+        info = Panel(args.message,title=args.role,style=Style(color=args.input_color if args.input_color!='reset' else 'yellow',frame=True))
+        rich_print(info)
         logging.info("Initializing Chat - Kindly Wait")
 
     if str(args.message).isdigit() and (len(keys) - 1) >= int(args.message):

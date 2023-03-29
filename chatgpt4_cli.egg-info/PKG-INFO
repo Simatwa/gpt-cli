@@ -11,6 +11,7 @@ Project-URL: Bug Report, https://github.com/Simatwa/gpt-cli/issues/new
 Description: <h1 align="center">gpt-cli</h1>
         <p align="center">
         <a href="https://github.com/Simatwa/gpt-cli"><img src="https://img.shields.io/static/v1?logo=Github&label=Github&message=Passing&color=lime" alt="Gihtub"/></a>
+        <a href="https://pypi.org/project/chatgpt4-cli/1.4.1/"><img src="https://img.shields.io/static/v1?label=Pypi&message=v1.4.1&color=green&logo=pypi" alt="Pypi"/>
         <a href="https://wakatime.com/badge/github/Simatwa/gpt-cli"><img src="https://wakatime.com/badge/github/Simatwa/gpt-cli.svg" alt="wakatime"/></a>
         <a href="#"><img src="https://img.shields.io/static/v1?label=License&message=MIT&color=green&logo=MIT" alt="license"/></a>
         <a href="#"><img src="https://img.shields.io/static/v1?label=Development&message=Beta&color=Orange&logo=progress" alt="Progress"/></a>
@@ -48,7 +49,14 @@ Description: <h1 align="center">gpt-cli</h1>
         
         Either of the following ways will get you ready.
         
-        1. Installing through pip from source:
+        1. Using pip
+        - From pypi
+        
+        ```sh
+        $ sudo pip install chatgpt4-cli
+        ```
+        
+        - Installing from source
          
          ```sh
          $ sudo pip install git+https://github.com/Simatwa/gpt-cli.git
