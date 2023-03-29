@@ -1,2 +1,6 @@
 *.key
 *test.py
+*GPTCLI/__pycache__
+*GPT_CLI.egg-info
+*build
+*dist

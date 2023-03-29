@@ -1,9 +1,11 @@
 #!/usr/bin/python
-__version__ = "1.3.1"
-__author__ = "Smartwa Caleb"
-__repo__ = "https://github.com/Simatwa/gpt-cli"
+from . import __version__,__author__,__repo__
 from colorama import Fore, Back
 from os import getlogin, getcwd, path
+from rich.console import Console
+from rich.panel import Panel
+from rich.style import Style
+from rich import print as rich_print
 import argparse
 
 
@@ -51,11 +53,12 @@ class config_handler:
 
     def get_args(self):
         """Gets args parsed"""
-        print(
-            f"""   gpt-cli v{__version__}
+        disp=f"""
             Repo : {__repo__}
             By   : {__author__}"""
-        )
+        gstyle=Style(color='cyan',frame='double')
+        intro=Panel(disp,title=f"gpt-cli v{__version__}",style=gstyle)
+        rich_print(intro)
 
         parser = argparse.ArgumentParser(
             description="Interact with ChatGPT at the terminal"
@@ -249,6 +252,7 @@ class config_handler:
             help="Delimeter for the .CSV file - [act,prompt]",
             metavar="symbol",
         )
+        parser.add_argument('-cf','--cookie-file',help="Path to Bing's cookies - for Edge Image Generation",metavar='path')
         parser.add_argument(
             "--disable-stream",
             help="Specifies not to stream responses from ChatGPT",
@@ -276,27 +280,19 @@ class config_handler:
         )
         return parser.parse_args()
 
-    def set_log(self):
-        """Configs logging"""
-        import logging
-
-        logging.basicConfig(
-            format="%(levelname)s - %(message)s - (%(asctime)s)",
-            datefmt="%d-%b-%Y %H:%M:%S",
-            level=logging.INFO,
-        )
-        return logging
-
     def main(self):
-        return self.get_args(), self.set_log()
+        return self.get_args()
 
 
 config_h = config_handler()
-args, logging = config_h.main()
+args = config_h.main()
 from sys import exit, stderr
 import json
 import openai
 import cmd
+from . import logging,getExc
+from .image import imager
+from .emage import emager
 from re import sub
 from datetime import datetime
 from os import system, remove, path, environ, makedirs
@@ -311,8 +307,6 @@ app_dir = AppDirs(
 first_time_run = False
 
 date_stamp = lambda text: datetime.today().strftime(text)
-
-getExc = lambda e: e.args[1] if isinstance(e.args, list) else str(e)
 
 if not path.isdir(app_dir):
     first_time_run = True
@@ -371,73 +365,6 @@ class local_interactor:
         self.special_input = {}
         self.run = lambda key: self.special_input[key]()
 
-    def help(self):
-        return f"""
-   gpt-cli {__version__}
- Repo : {__name__}
-
-╒═══════╤═══════════════════╤═════════════════════════════════════════════╕
-│   No. │ Command           │ Action                                      │
-╞═══════╪═══════════════════╪═════════════════════════════════════════════╡
-│   1   │ ./{{command}}       │ Run command against system                  │
-├───────┼───────────────────┼─────────────────────────────────────────────┤
-│   2   │ img               │ Generate image based on prompt              │
-├───────┼───────────────────┼─────────────────────────────────────────────┤
-│   3   │ txt2img           │ Generate image based on GPT description     │
-├───────┼───────────────────┼─────────────────────────────────────────────┤
-│   4   │ _font_color       │ Modify font-color                           │
-├───────┼───────────────────┼─────────────────────────────────────────────┤
-│   5   │ _background_color │ Modify background_color                     │
-├───────┼───────────────────┼─────────────────────────────────────────────┤
-│   6   │ _prompt           │ Modify terminal prompt                      │
-├───────┼───────────────────┼─────────────────────────────────────────────┤
-│   7   │ _save             │ Save current configurations to `.json` file │
-├───────┼───────────────────┼─────────────────────────────────────────────┤
-│   8   │ _load             │ Load configurations from file               │
-├───────┼───────────────────┼─────────────────────────────────────────────┤
-│   9   │ _rollback         │ Rollback Chat by {{n}} times                  │
-├───────┼───────────────────┼─────────────────────────────────────────────┤
-│  10   │ _reset            │ Reset current chat and start new            │
-├───────┼───────────────────┼─────────────────────────────────────────────┤
-│  11   │ _help             │ Show this help info                         │
-├───────┼───────────────────┼─────────────────────────────────────────────┤
-│  12   │ {{Any Other}}       │ Chat with ChatGPT                           │
-╘═══════╧═══════════════════╧═════════════════════════════════════════════╛
-
-1.  img : Text-to-Image converter - (EXPERIMENTAL)
-    e.g 'img Toddler cartoon coding in Python'
-
-2.  txt2img : Generate image based on GPT description
-    e.g 'txt2img Describe phenotype anatomy of ancient dinosaurs'
-
-3. _font_color : modifies font-color
-    e.g 'font_color input red'
-
-4. _background_color : modifies background_color
-    e.g 'background_color cyan'
-
-5. _prompt : Modify CMD prompt
-    e.g '_prompt ┌─[{getlogin().capitalize()}@ChatGPT4]─(%H:%M:%S)
-
-6. _load : Load configurations from the json file
-    e.g '_load DAN.json'
-
-7. _save : Save the current Chat Configurations
-    e.g '_load DAN.json'
-
-8. _rollback : Rollback the Chat by  {{n}} time(s)
-    e.g '_rollback 2'
-
-9. _reset : Reset current chat and start new
-    e.g '_reset Chat as if you are a 10 year old child'
-
-10. _help : Show this help info
-
-* Use double `./` (fullstop and foward slash) to interact with system commands
-      e.g './ifconfig'
-        """
-
-
 class tracker:
     """Keeps track of the prompts & responses"""
 
@@ -462,140 +389,6 @@ class tracker:
             return
         self.feedback = sub("\n", "", response, 1)
         thr(target=self.save_record).start()
-
-
-### Imager
-
-
-class imager:
-    """Handles image generation"""
-
-    def __init__(self, commands: list):
-        self.args = self.get_args(commands)
-        if type(self.args.prompt) is list:
-            self.args.prompt = " ".join(self.args.prompt)
-        self.image_buff = self.image_saver(self.args, [])
-
-    def get_args(self, args):
-        resolutions = ["256x256", "512x512", "1024x1024"]
-        dir = path.join(path.expanduser("~"), "Downloads/GPT")
-        parser = argparse.ArgumentParser(description="Text-to-Image Converter")
-        parser.add_argument("prompt", help="Description of the image", nargs="*")
-        parser.add_argument(
-            "-f", "--file", help="Path to text-file containing the description"
-        )
-        parser.add_argument(
-            "-n",
-            "--number",
-            help="Total images to be generated - def  [1]",
-            type=int,
-            default=1,
-        )
-        parser.add_argument(
-            "-s",
-            "--size",
-            help="Image resolution (size) - def [512x512]",
-            default="512x512",
-            choices=resolutions,
-            metavar="|".join(resolutions),
-        )
-        parser.add_argument("-o", "--output", help="Name for identifying the images")
-        parser.add_argument(
-            "-d",
-            "--dir",
-            help=f"Directory for saving the images - def [{dir}]",
-            default=dir,
-        )
-        parser.add_argument(
-            "--url", help="Get url for the images only, not images", action="store_true"
-        )
-        return parser.parse_args(args=args)
-
-    def main(self) -> dict:
-        if not self.args:
-            return
-        try:
-            if not bool(self.args.prompt):
-                if self.args.file:
-                    with open(self.args.file) as fh:
-                        self.args.prompt = fh.read()
-                else:
-                    print("[*] Kindly pass prompt or file-path to a text-file.")
-                    return
-            if type(self.args.prompt) is list:
-                self.args.prompt = " ".join(self.args.prompt)
-            print(">>[*] Generating image with GPT", end="\r")
-            image_resp = openai.Image.create(
-                prompt=self.args.prompt, n=self.args.number, size=self.args.size
-            )
-            resp = []
-            for value in image_resp["data"]:
-                resp.append(value["url"])
-
-            self.image_buff.urls = resp
-            self.image_buff.save()
-            print("", end="\r")
-            return {"api_resp": image_resp, "url": resp}
-
-        except Exception as e:
-            logging.error(getExc(e))
-
-    class image_saver:
-        """Receives urls, query and save the contents"""
-
-        def __init__(self, args: object, urls: list):
-            self.args = args
-            self.urls = urls
-            self.save_count = 0
-
-        def write_buff(self, data):
-            """Saves the image"""
-            if not path.isdir(self.args.dir):
-                from os import makedirs
-
-                makedirs(self.args.dir)
-            cpath = path.join(
-                self.args.dir,
-                f'{self.args.output}{self.save_count if self.save_count else ""}.png',
-            )
-            if path.isfile(cpath):
-                self.save_count += 1
-                return self.write_buff(data)
-
-            with open(cpath, "wb") as fh:
-                fh.write(data)
-            self.save_count += 1
-
-        def save(self):
-            """Queries the image and saves it"""
-            if self.args.url:
-                for link in self.urls:
-                    print(self.urls.index(link), "-", link)
-                return
-            if not self.args.output:
-                prompt = self.args.prompt.split(" ")
-                self.args.output = (
-                    "_".join(prompt[:4]) + "..."
-                    if len(prompt) > 5
-                    else "_".join(prompt)
-                )
-            from requests import get
-
-            for link in self.urls:
-                print(
-                    ">>Downloading image" f"[{self.urls.index(link) + 1}]",
-                    end="\r",
-                )
-                try:
-                    resp = get(link, timeout=60)
-                    if resp.status_code == 200:
-                        self.write_buff(resp.content)
-                    else:
-                        logging.warning(
-                            f">>Failed to download image - Code : {resp.status_code} - {resp.reason}"
-                        )
-                except Exception as e:
-                    logging.error(getExc(e))
 
 
 class intro_prompt_handler:
@@ -767,6 +560,14 @@ class main_gpt(cmd.Cmd):
         if isinstance(resp, dict):
             args.message = line
             record_keeper.main(str(resp["url"]))
+    
+    def do_emg(self,line):
+        if args.cookie_file:
+            emg_args=imager(line.split(' ')).args
+            emg_args.__setattr__('cookie_file',args.cookie_file)
+            emager(emg_args).main()
+        else:
+            logging.warning('Cookie file is required at launch [--cookie-file {path}]')
 
     def do__prompt(self, line):
         """Modify prompts"""
@@ -849,8 +650,8 @@ class main_gpt(cmd.Cmd):
             logging.error(getExc(e))
 
     def do__help(self, line):
-        print(self.interactive.help())
-
+        from .helper import help
+        print(help)
 
 def get_api_key() -> str:
     """Gets API from Key_path or args.key"""
@@ -906,8 +707,8 @@ Start-Prompt : {args.message}
     else:
         logging.warning(error_msg)
 
-
-if __name__ == "__main__":
+def main():
+    global chatbot,gpt4,record_keeper
     record_keeper = tracker(args.output)
     args.api_key = get_api_key()
     predefined_prompt_used = intro_train()
@@ -948,3 +749,5 @@ if __name__ == "__main__":
         exit(logging.info("Stopping program"))
     except Exception as e:
         print(getExc(e))
+if __name__ == "__main__":
+    main()

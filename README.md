@@ -35,14 +35,22 @@ CLI tool for interacting with [ChatGPT](https://openai.com).
 
 ## Installation
 
-Running the following commands at the `terminal` will get you ready.
+Either of the following ways will get you ready.
+
+1. Installing through pip from source:
+ 
+ ```sh
+ $ sudo pip install git+https://github.com/Simatwa/gpt-cli.git
+ ```
+
+2. Running the following commands at the `terminal` will get you ready.
 
 ```sh
 $ git clone https://github.com/Simatwa/gpt-cli.git
 $ cd gpt-cli
-$ bash install.sh
+$ sudo python3 setup.py install
  #or
-$ sudo bash install.sh
+$ python3 setup.py install
 ```
 
 ## Usage 
@@ -81,7 +89,25 @@ The [awesome-chatgpt-prompts](https://github.com/f/awesome-chatgpt-prompts) can 
 
     e.g `$ gpt-cli 29`
 
-Run `$ gpt-cli --dump show` to view the act,prompt and their **indexes**  
+Run `$ gpt-cli --dump show` to view the act,prompt and their **indexes**
+
+You can as well generate images using EdgeGPT (DALL-E) or ChatGPT independent of `gpt-cli`, uninteractively at the terminal:
+
+1. EdgeGPT 
+
+```sh
+$ gpt-cli-emage --cookie-file <path> <Your prompt>
+```  
+- Visit [EdgeGPT](https://github.com/acheong08/EdgeGPT#requirements) to learn more on how to get the cookies.
+
+2. ChatGPT 
+
+```sh
+  # Make OPENAI_API_KEY environment variable
+  $ gpt-cli-image <Your Prompt>
+```
+
+For more info run `$gpt-cli-image -h` or `$gpt-cli-emage -h`.
 
 ## Highlight
 <details>
@@ -91,8 +117,9 @@ Run `$ gpt-cli --dump show` to view the act,prompt and their **indexes**
 <tr><th style="text-align: right;">  No.</th><th>Command          </th><th>Action                                     </th></tr>
 </thead>
 <tbody>
-<tr><td style="text-align: right;">    1</td><td>./{command}      </td><td>Run command against system                 </td></tr>
-<tr><td style="text-align: right;">    2</td><td>img              </td><td>Generate image based on prompt             </td></tr>
+<tr><td style="text-align: right;">    0</td><td>./{command}      </td><td>Run command against system                 </td></tr>
+<tr><td style="text-align: right;">    1</td><td>img              </td><td>Generate image ChatGPT based on prompt     </td></tr>
+<tr><td style="text-align: right;">    2</td><td>emg              </td><td>Generate image with EdgeGPT based on prompt</td></tr>
 <tr><td style="text-align: right;">    3</td><td>txt2img          </td><td>Generate image based on GPT description    </td></tr>
 <tr><td style="text-align: right;">    4</td><td>_font_color      </td><td>Modify font-color                          </td></tr>
 <tr><td style="text-align: right;">    5</td><td>_background_color</td><td>Modify background_color                    </td></tr>
@@ -107,34 +134,37 @@ Run `$ gpt-cli --dump show` to view the act,prompt and their **indexes**
 </table>
 </summary>
 
-1.img : Text-to-Image converter (EXPERIMENTAL)
+1.img : Text-to-Image converter - ChatGPT
  - e.g ```img Toddler cartoon coding in Python```
 
-2.txt2img : Generate image based on GPT description
+2.emg : Text-to-Image converter - EdgeGPT
+ - e.g ```emg Toddler cartoon coding in Python```
+
+3.txt2img : Generate image based on GPT description
  - e.g ```txt2img Describe phenotype anatomy of ancient dinosaurs```
 
-3._font_color : modifies font-color
+4._font_color : modifies font-color
  - e.g ```font_color input red```
 
-4._background_color : modifies background_color
+5._background_color : modifies background_color
  - e.g ```background_color cyan```
 
-5._prompt : Modify CMD prompt
+6._prompt : Modify CMD prompt
  - e.g ```prompt ┌─[Smartwa@ChatGPT4]─(%H:%M:%S)```
 
-6._load : Load configurations from the json file
+7._load : Load configurations from the json file
  - e.g ```load DAN.json```
 
-7._save : Save the current Chat Configurations
+8._save : Save the current Chat Configurations
  - e.g ```save DAN.json```
 
-8._rollback : Rollback the Chat by the {n} time(s)
+9._rollback : Rollback the Chat by the {n} time(s)
  - e.g ```_rollback 2```
 
-9._reset : Reset current chat and start new
+10._reset : Reset current chat and start new
  - e.g ```_reset Chat as if you are a 10 year old child```
 
-10._help : Show this help info
+11._help : Show this help info
 
 * Use double `./` *(fullstop and forward slash)* to interact with **system commands**
   e.g './ifconfig'

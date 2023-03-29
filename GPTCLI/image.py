@@ -1,14 +1,7 @@
 import openai
 import argparse
 from os import path
-import logging
-
-logging.basicConfig(
-    format="%(levelname)s - %(message)s : %(asctime)s",
-    datefmt="%d-%b-%Y %H:%M:%S",
-    level=logging.INFO,
-)
-
+from . import logging,getExc
 
 class imager:
     """Handles image generation"""
@@ -16,13 +9,13 @@ class imager:
     def __init__(self, commands: list):
         self.args = self.get_args(commands)
         if type(self.args.prompt) is list:
-            self.args.prompt = " ".join(self.args.prompt)
+            self.args.prompt = " ".join(self.args.prompt) 
         self.image_buff = self.image_saver(self.args, [])
 
     def get_args(self, args):
         resolutions = ["256x256", "512x512", "1024x1024"]
         dir = path.join(path.expanduser("~"), "Downloads/GPT")
-        parser = argparse.ArgumentParser(description="Text-to-Image Generator")
+        parser = argparse.ArgumentParser(description="Text-to-Image Converter - ChatGPT")
         parser.add_argument("prompt", help="Description of the image", nargs="*")
         parser.add_argument(
             "-f", "--file", help="Path to text-file containing the description"
@@ -81,15 +74,16 @@ class imager:
             return {"api_resp": image_resp, "url": resp}
 
         except Exception as e:
-            logging.error(str(e))
+            logging.error(getExc(e))
 
     class image_saver:
         """Receives urls, query and save the contents"""
 
-        def __init__(self, args: object, urls: list):
+        def __init__(self, args: object, urls: list,session:object=False):
             self.args = args
             self.urls = urls
             self.save_count = 0
+            self.session = session
 
         def write_buff(self, data):
             """Saves the image"""
@@ -113,7 +107,7 @@ class imager:
             """Queries the image and saves it"""
             if self.args.url:
                 for link in self.urls:
-                    print(self.urls.index(link),'-',link)
+                    print(self.urls.index(link), "-", link)
                 return
             if not self.args.output:
                 prompt = self.args.prompt.split(" ")
@@ -126,12 +120,11 @@ class imager:
 
             for link in self.urls:
                 print(
-                    ">>Downloading image",
-                    f"[{self.urls.index(link) + 1}]",
+                    ">>Downloading image" f"[{self.urls.index(link) + 1}]",
                     end="\r",
                 )
                 try:
-                    resp = get(link, timeout=60)
+                    resp = get(link, timeout=60) if not self.session else self.session.get(link, timeout=60)
                     if resp.status_code == 200:
                         self.write_buff(resp.content)
                     else:
@@ -139,17 +132,26 @@ class imager:
                             f">>Failed to download image - Code : {resp.status_code} - {resp.reason}"
                         )
                 except Exception as e:
-                    logging.error(str(e))
+                    logging.error(getExc(e))
 
+            if self.save_count < self.args.number:
+                return True
+
+
+def main():
+    from sys import argv
+    start = imager(argv[1:])
+    while True:
+        try:
+            start.args.prompt = input('>>[ChatGPT-ImageGen]:')
+            start.main()
+        except KeyboardInterrupt:
+            print('')
+            continue
+        except EOFError:
+            exit(logging.error('Exitting...'))
+        except Exception as e:
+            logging.error(getExc(e))
 
 if __name__ == "__main__":
-    from sys import argv
-
-    cmd = [
-        "Guy wearing Fawkes mask in a very palatial place with a nice coding-setup, programming in python. Display the codes",
-        "-n",
-        "2",
-    ]
-    start = imager(argv[1:])
-    # start = imager(cmd)
-    # print(start.main())
+    main()

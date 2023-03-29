@@ -1,0 +1,8 @@
+README.md
+setup.py
+src/GPTCLI.egg-info/PKG-INFO
+src/GPTCLI.egg-info/SOURCES.txt
+src/GPTCLI.egg-info/dependency_links.txt
+src/GPTCLI.egg-info/entry_points.txt
+src/GPTCLI.egg-info/requires.txt
+src/GPTCLI.egg-info/top_level.txt
