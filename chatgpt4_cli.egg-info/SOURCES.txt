@@ -1,0 +1,13 @@
+README.md
+setup.py
+GPTCLI/__init__.py
+GPTCLI/emage.py
+GPTCLI/gptcli.py
+GPTCLI/helper.py
+GPTCLI/image.py
+chatgpt4_cli.egg-info/PKG-INFO
+chatgpt4_cli.egg-info/SOURCES.txt
+chatgpt4_cli.egg-info/dependency_links.txt
+chatgpt4_cli.egg-info/entry_points.txt
+chatgpt4_cli.egg-info/requires.txt
+chatgpt4_cli.egg-info/top_level.txt

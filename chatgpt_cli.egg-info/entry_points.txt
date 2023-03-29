@@ -1,0 +1,5 @@
+[console_scripts]
+gpt-cli = GPTCLI.gptcli:main
+gpt-cli-emage = GPTCLI.emage:main
+gpt-cli-image = GPTCLI.image:main
+

@@ -8,11 +8,12 @@ def get_file(fnm:str,lst:bool=False):
         return fh.read()
 
 setup(
-    name="GPT-CLI",
+    name="chatgpt4-cli",
     packages=["GPTCLI"],
     version=__version__,
     license="MIT",
-    author="Smartwa Caleb",
+    author=__author__,
+    maintainer=__author__,
     author_email="smartwacaleb@gmail.com",
     description="Terminal for ChatGPT",
     url=__repo__,
