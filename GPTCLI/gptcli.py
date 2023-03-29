@@ -329,7 +329,7 @@ if not path.isdir(app_dir):
 
 class gpt3_interactor:
     def __init__(self):
-        self.out = lambda rp: rich_print(Markdown(rp)) if args.markdown else print(rp)
+        self.out = lambda rp: rich_print(Markdown(rp,style=Style(color=args.output_color))) if args.markdown else print(rp)
 
     def gpt_v1(self, rp: str = None):
         """Utilises GPTv1"""
@@ -560,6 +560,7 @@ class main_gpt(cmd.Cmd):
         imagiser = imager(line.split(" "))
         description = self.default(imagiser.args.prompt, return_fb=True)
         if description:
+            print()
             if imagiser.args.emg:
                 self.do_emg(description.strip())
             else:
@@ -727,7 +728,7 @@ Start-Prompt : {args.message}
 
 def main():
     global chatbot, gpt4, record_keeper
-    args.stream = None if args.markdown else args.stream
+    args.disable_stream = True if args.markdown else args.disable_stream
     record_keeper = tracker(args.output)
     args.api_key = get_api_key()
     predefined_prompt_used = intro_train()

@@ -37,7 +37,7 @@ class ImageGen:
         Parameters:
             prompt: str
         """
-        print("Sending request...", end="\r")
+        print("[*] Sending request...", end="\r")
         url_encoded_prompt = urllib.parse.quote(prompt)
         # https://www.bing.com/images/create?q=<PROMPT>&rt=3&FORM=GENCRE
         url = f"{BING_URL}/images/create?q={url_encoded_prompt}&rt=4&FORM=GENCRE"
@@ -57,12 +57,12 @@ class ImageGen:
         # https://www.bing.com/images/create/async/results/{ID}?q={PROMPT}
         polling_url = f"{BING_URL}/images/create/async/results/{request_id}?q={url_encoded_prompt}"
         # Poll for results
-        print("Waiting for results...", end="\r")
+        print("[*] Waiting for results...", end="\r")
         start_wait = time.time()
         while True:
             if int(time.time() - start_wait) > 300:
                 raise Exception("Timeout error")
-            print(".", end="", flush=True)
+            #print(".", end="", flush=True)
             response = self.session.get(polling_url)
             if response.status_code != 200:
                 raise Exception("Could not get results")
@@ -83,7 +83,7 @@ class ImageGen:
         """
         Saves images to output directory
         """
-        print("\nDownloading images...", end="\r")
+        print("\n[*] Downloading images...", end="\r")
         try:
             os.makedirs(output_dir)
         except FileExistsError:
