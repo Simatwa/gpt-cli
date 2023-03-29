@@ -342,6 +342,7 @@ class gpt3_interactor:
         else:
             rp = chatbot.ask(args.message, user=args.role)
             self.out(rp)
+        print(Fore.RESET)
         return rp
 
     def gpt_v4(self, rp: str = None):
@@ -353,6 +354,7 @@ class gpt3_interactor:
         else:
             rp = chatbot.ask(args.message, role=args.role)
             self.out(rp)
+        print(Fore.RESET)
         return rp
 
     def main(self):
