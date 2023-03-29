@@ -342,7 +342,6 @@ class gpt3_interactor:
         else:
             rp = chatbot.ask(args.message, user=args.role)
             self.out(rp)
-        print(Fore.RESET)
         return rp
 
     def gpt_v4(self, rp: str = None):
@@ -354,7 +353,6 @@ class gpt3_interactor:
         else:
             rp = chatbot.ask(args.message, role=args.role)
             self.out(rp)
-        print(Fore.RESET)
         return rp
 
     def main(self):
@@ -559,11 +557,11 @@ class main_gpt(cmd.Cmd):
 
     def do_txt2img(self, line):
         """Generate images based on GPT description"""
-        print(">>[*] Querying description from GPT", end="\r")
+        print(self.color_dict[args.output_color]+">>[*] Querying description from GPT", end="\r")
         imagiser = imager(line.split(" "))
         description = self.default(imagiser.args.prompt, return_fb=True)
         if description:
-            print()
+            print(self.color_dict[args.input_color])
             if imagiser.args.emg:
                 self.do_emg(description.strip())
             else:
@@ -575,6 +573,7 @@ class main_gpt(cmd.Cmd):
 
     def do_img(self, line):
         """Text-to-Image handler"""
+        print(self.color_dict[args.output_color],end='\r')
         resp = imager(line.split(" ")).main()
         if isinstance(resp, dict):
             args.message = line

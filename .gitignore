@@ -4,3 +4,4 @@
 *GPT_CLI.egg-info
 *build
 *dist
+*__pycache__
