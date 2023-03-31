@@ -229,9 +229,9 @@ class config_handler:
         parser.add_argument(
             "-pp",
             "--prompt-prefix",
-            help="Text to append before saving each prompt - default [>>timestamp]",
+            help="Text to append before saving each prompt - default [### timestamp]",
             metavar="prefix",
-            default=">>(%d-%b %H:%M:%S) : ",
+            default="### (%d-%b %H:%M:%S) : ",
         )
         parser.add_argument(
             "-rp",
@@ -329,7 +329,11 @@ if not path.isdir(app_dir):
 
 class gpt3_interactor:
     def __init__(self):
-        self.out = lambda rp: rich_print(Markdown(rp,style=Style(color=args.output_color))) if args.markdown else print(rp)
+        self.out = (
+            lambda rp: rich_print(Markdown(rp, style=Style(color=args.output_color)))
+            if args.markdown
+            else print(rp)
+        )
 
     def gpt_v1(self, rp: str = None):
         """Utilises GPTv1"""
@@ -399,7 +403,10 @@ class tracker:
         """Main method"""
         if any([self.failed_to_record, args.disable_recording]):
             return
-        self.feedback = sub("\n", "", response, 1)
+        if isinstance(response, list):
+            self.feedback = "\n".join(response)
+        else:
+            self.feedback = sub("\n", "", response, 1)
         thr(target=self.save_record).start()
 
 
@@ -447,7 +454,7 @@ class intro_prompt_handler:
         x = 0
         if args.dump:
 
-            #with open(args.dump, "w") as fh:
+            # with open(args.dump, "w") as fh:
             if args.dump in ("keys", "roles", "acts", "act", "role"):
                 from tabulate import tabulate
 
@@ -477,6 +484,7 @@ class intro_prompt_handler:
             else:
                 with open(args.dump, "w") as fh:
                     from json import dumps
+
                     data = json.dumps(resp, indent=4)
                     fh.write(data)
                     print(data)
@@ -546,9 +554,9 @@ class main_gpt(cmd.Cmd):
             rp = gpt3.main()
             if rp[0]:
                 feedback = sub("\n\n", "\n", rp[1], 1)
-                record_keeper.main(feedback)
                 if return_fb:
                     return feedback.strip()
+                record_keeper.main(feedback)
 
             else:
                 logging.error(str(rp[1]))
@@ -557,39 +565,53 @@ class main_gpt(cmd.Cmd):
 
     def do_txt2img(self, line):
         """Generate images based on GPT description"""
-        print(self.color_dict[args.output_color]+">>[*] Querying description from GPT", end="\r")
+        print(
+            self.color_dict[args.output_color] + ">>[*] Querying description from GPT",
+            end="\r",
+        )
         imagiser = imager(line.split(" "))
         description = self.default(imagiser.args.prompt, return_fb=True)
         if description:
             print(self.color_dict[args.input_color])
+            imagiser.args.prompt = description.strip()
             if imagiser.args.emg:
-                self.do_emg(description.strip())
+                self.do_emg(imagiser.args.prompt, imagiser.args)
             else:
-                imagiser.args.prompt = description.strip()
-                imagiser.main()
+                rp = imagiser.main()
+                if isinstance(rp, dict):
+                    record_keeper.main(rp["url"])
 
         else:
             logging.error("Failed to generate description.")
 
     def do_img(self, line):
         """Text-to-Image handler"""
-        print(self.color_dict[args.output_color],end='\r')
+        print(self.color_dict[args.output_color], end="\r")
         resp = imager(line.split(" ")).main()
         if isinstance(resp, dict):
             args.message = line
-            record_keeper.main('\n'.join(resp["url"]))
+            record_keeper.main(resp["url"])
 
-    def do_emg(self, line):
-        print(self.color_dict[args.input_color],end='\r')
-        if args.cookie_file:
-            emg_args = imager(line.split(" ")).args
-            emg_args.__setattr__("cookie_file", args.cookie_file)
-            download = emager(emg_args)
-            download.main()
-            args.message=line
-            record_keeper.main('\n'.join(download.urls))
-        else:
-            logging.warning("Cookie file is required at launch [--cookie-file {path}]")
+    def do_emg(self, line, args_parsed=False):
+        print(
+            self.color_dict[args.input_color if args_parsed else args.output_color],
+            end="\r",
+        )
+        try:
+            if args.cookie_file:
+                emg_args = args_parsed if args_parsed else imager(line.split(" ")).args
+                emg_args.__setattr__("cookie_file", args.cookie_file)
+                download = emager(emg_args)
+                download.main()
+                args.message = line
+                if isinstance(download.urls, list):
+                    record_keeper.main(download.urls)
+            else:
+                logging.warning(
+                    "Cookie file is required at launch [--cookie-file {path}]"
+                )
+        except Exception as e:
+            logging.error(getExc(e))
 
     def do__prompt(self, line):
         """Modify prompts"""
@@ -700,7 +722,14 @@ def intro_train(
     keys = list(prompt_dict.keys())
 
     def show_role():
-        info = Panel(args.message,title=args.role,style=Style(color=args.input_color if args.input_color!='reset' else 'yellow',frame=True))
+        info = Panel(
+            args.message,
+            title=args.role,
+            style=Style(
+                color=args.input_color if args.input_color != "reset" else "yellow",
+                frame=True,
+            ),
+        )
         rich_print(info)
         logging.info("Initializing Chat - Kindly Wait")
 

@@ -47,8 +47,7 @@ class ImageGen:
             url = f"{BING_URL}/images/create?q={url_encoded_prompt}&rt=3&FORM=GENCRE"
             response3 = self.session.post(url, allow_redirects=False, timeout=200)
             if response3.status_code != 302:
-                logging.error(response3.text)
-                logging.warning("Redirect failed")
+                logging.warning("Inappropriate contents found in the generated images. Please try again or try another prompt.")
             response = response3
         # Get redirect URL
         redirect_url = response.headers["Location"].replace("&nfy=1", "")
@@ -62,7 +61,7 @@ class ImageGen:
         while True:
             if int(time.time() - start_wait) > 300:
                 raise Exception("Timeout error")
-            #print(".", end="", flush=True)
+            # print(".", end="", flush=True)
             response = self.session.get(polling_url)
             if response.status_code != 200:
                 raise Exception("Could not get results")
