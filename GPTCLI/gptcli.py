@@ -229,9 +229,9 @@ class config_handler:
         parser.add_argument(
             "-pp",
             "--prompt-prefix",
-            help="Text to append before saving each prompt - default [### timestamp]",
+            help="Text to append before saving each prompt - default [>>> timestamp]",
             metavar="prefix",
-            default="### (%d-%b %H:%M:%S) : ",
+            default=">>> (%d-%b %H:%M:%S) : ",
         )
         parser.add_argument(
             "-rp",
