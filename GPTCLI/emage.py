@@ -47,7 +47,7 @@ class ImageGen:
             url = f"{BING_URL}/images/create?q={url_encoded_prompt}&rt=3&FORM=GENCRE"
             response3 = self.session.post(url, allow_redirects=False, timeout=200)
             if response3.status_code != 302:
-                logging.warning("Inappropriate contents found in the generated images. Please try again or try another prompt.")
+                logging.error(response3.text)
             response = response3
         # Get redirect URL
         redirect_url = response.headers["Location"].replace("&nfy=1", "")
