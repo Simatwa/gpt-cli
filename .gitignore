@@ -6,3 +6,4 @@
 *dist
 *__pycache__
 *chatgpt4_cli.egg-info
+*.vscode
