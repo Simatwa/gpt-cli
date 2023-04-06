@@ -592,8 +592,10 @@ class main_gpt(cmd.Cmd):
                     record_keeper.main(rp["url"])
 
         else:
+            print(self.color_dict[args.input_color])
             if not description:
                 logging.error("Failed to generate description.")
+                
 
     def do_img(self, line):
         """Text-to-Image handler"""
