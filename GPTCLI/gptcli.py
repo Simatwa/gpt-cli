@@ -539,6 +539,16 @@ class main_gpt(cmd.Cmd):
             self.bcolor_dict[args.background_color] + self.color_dict[args.input_color]
         )
 
+    def prompt_is_error_free(self,prompt,resp=True) -> bool:
+        """Checks if prompt contains [sorry]"""
+        if isinstance(prompt,list):
+            if len(prompt)>=2 and prompt[0:2]==["I'm","sorry"]:
+                resp = False
+        else:
+            if prompt.startswith("I'm sorry"):
+                resp = False
+        return resp
+
     def default(self, raw, return_fb=False):
         if not bool(raw):
             return
@@ -571,7 +581,7 @@ class main_gpt(cmd.Cmd):
         )
         imagiser = imager(line.split(" "))
         description = self.default(imagiser.args.prompt, return_fb=True)
-        if description:
+        if description and self.prompt_is_error_free(description):
             print(self.color_dict[args.input_color])
             imagiser.args.prompt = description.strip()
             if imagiser.args.emg:
@@ -582,7 +592,8 @@ class main_gpt(cmd.Cmd):
                     record_keeper.main(rp["url"])
 
         else:
-            logging.error("Failed to generate description.")
+            if not description:
+                logging.error("Failed to generate description.")
 
     def do_img(self, line):
         """Text-to-Image handler"""
