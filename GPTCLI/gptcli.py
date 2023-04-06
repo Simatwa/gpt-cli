@@ -116,7 +116,7 @@ class config_handler:
             type=float,
             choices=self.float_range[0:10],
             metavar="[0.1-1]",
-            default=0.1,
+            default=0.0,
         )
         parser.add_argument(
             "-f",
@@ -125,7 +125,7 @@ class config_handler:
             type=float,
             choices=self.float_range,
             metavar="[0.1-2]",
-            default=0.1,
+            default=0.0,
         )
         parser.add_argument(
             "-p",
@@ -133,7 +133,7 @@ class config_handler:
             help="Chances of topic being repeated",
             type=float,
             choices=self.float_range,
-            default=0.1,
+            default=0.0,
             metavar="[0.1-2]",
         )
         parser.add_argument("-k", "--key", help="OPENAI-API-KEY")
