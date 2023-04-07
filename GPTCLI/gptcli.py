@@ -592,11 +592,11 @@ class main_gpt(cmd.Cmd):
                     record_keeper.main(rp["url"])
 
         else:
-            print(self.color_dict[args.input_color],end='\n')
+            print("")
             if not description:
                 logging.error("Failed to generate description.")
+        self.do__prompt(self.prompt_disp)
                 
-
     def do_img(self, line):
         """Text-to-Image handler"""
         print(self.color_dict[args.output_color], end="\r")
@@ -604,6 +604,7 @@ class main_gpt(cmd.Cmd):
         if isinstance(resp, dict):
             args.message = line
             record_keeper.main(resp["url"])
+        self.do__prompt(self.prompt_disp)
 
     def do_emg(self, line, args_parsed=False):
         print(
@@ -625,6 +626,7 @@ class main_gpt(cmd.Cmd):
                 )
         except Exception as e:
             logging.error(getExc(e))
+        self.do__prompt(self.prompt_disp)
 
     def do__prompt(self, line):
         """Modify prompts"""
@@ -648,6 +650,7 @@ class main_gpt(cmd.Cmd):
             logging.error(getExc(e))
         else:
             self.apply_color()
+        self.do__prompt(self.prompt_disp)
 
     def do__background_color(self, line):
         """Sets background-color"""
@@ -658,6 +661,7 @@ class main_gpt(cmd.Cmd):
             self.apply_color()
         except Exception as e:
             logging.exception(e)
+        self.do__prompt(self.prompt_disp)
 
     def do__save(self, line):
         try:
@@ -679,6 +683,7 @@ class main_gpt(cmd.Cmd):
                 chatbot.save_conversation(join_list(line))
         except Exception as e:
             logging.error(getExc(e))
+        self.do__prompt(self.prompt_disp)
 
     def do__load(self, line):
         try:
@@ -689,6 +694,7 @@ class main_gpt(cmd.Cmd):
         except Exception as e:
             logging.error(getExc(e))
             # logging.exception(e)
+        self.do__prompt(self.prompt_disp)
 
     def do__rollback(self, line):
         try:
@@ -696,6 +702,7 @@ class main_gpt(cmd.Cmd):
                 chatbot.rollback(int(line))
         except Exception as e:
             logging.error(getExc(e))
+        self.do__prompt(self.prompt_disp)
 
     def do__reset(self, line):
         try:
@@ -705,11 +712,13 @@ class main_gpt(cmd.Cmd):
                 chatbot.reset()
         except Exception as e:
             logging.error(getExc(e))
+        self.do__prompt(self.prompt_disp)
 
     def do__help(self, line):
         from .helper import help
 
         print(help)
+        self.do__prompt(self.prompt_disp)
 
 
 def get_api_key() -> str:
@@ -778,29 +787,32 @@ def main():
     args.api_key = get_api_key()
     predefined_prompt_used = intro_train()
     openai.api_key = args.api_key
-    if args.gpt in ("4"):
-        from revChatGPT.V3 import Chatbot
-
-        gpt4 = True
-        chatbot = Chatbot(
-            api_key=args.api_key,
-            engine=args.model if args.model in config_h.v4models else "gpt-3.5-turbo",
-            # timeout=args.timeout, #Available as from revChatGPT>=4.0.6.1
-            proxy=args.proxy,  #
-            max_tokens=args.max_tokens,
-            temperature=args.temperature,
-            presence_penalty=args.presence_frequency,
-            frequency_penalty=args.frequency_penalty,
-            reply_count=args.reply_count,
-            system_prompt=args.system_prompt
-            if args.system_prompt is str
-            else " ".join(args.system_prompt),
-        )
-    else:
-        gpt4 = False
-        from revChatGPT.V0 import Chatbot
-
-        chatbot = Chatbot(api_key=args.api_key, engine=args.model, proxy=args.proxy)
+    try:
+        if args.gpt in ("4"):
+            from revChatGPT.V3 import Chatbot
+            
+            gpt4 = True
+            chatbot = Chatbot(
+                api_key=args.api_key,
+                engine=args.model if args.model in config_h.v4models else "gpt-3.5-turbo",
+                # timeout=args.timeout, #Available as from revChatGPT>=4.0.6.1
+                proxy=args.proxy,  #
+                max_tokens=args.max_tokens,
+                temperature=args.temperature,
+                presence_penalty=args.presence_frequency,
+                frequency_penalty=args.frequency_penalty,
+                reply_count=args.reply_count,
+                system_prompt=args.system_prompt
+                if args.system_prompt is str
+                else " ".join(args.system_prompt),
+                )
+        else:
+            gpt4 = False
+            from revChatGPT.V0 import Chatbot
+            chatbot = Chatbot(api_key=args.api_key, engine=args.model, proxy=args.proxy)
+    except Exception as e:
+        exit(logging.critical(getExc(e)))
+        
     try:
         if args.new_record and path.isfile(args.output):
             remove(args.output)
