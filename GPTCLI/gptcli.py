@@ -778,6 +778,7 @@ def intro_train(
             logging.warning(error_msg)
     else:
         logging.warning(error_msg)
+    del prompt_dict,keys
 
 
 def main():
