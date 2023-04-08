@@ -298,6 +298,8 @@ As a `terminal guy` I used to find it uncomfortable to keep shifting from one wi
 - [x] Issue prompt from a file
 - [ ] Busy bar
 
+  > Review [CHANGLOG](https://github.com/Simatwa/gpt-cli/blob/main/CHANGELOG.md)
+
 ## Acknowledgements
 
 1. [remo7777](https://github.com/remo7777/T-Header)
