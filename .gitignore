@@ -1,9 +1,11 @@
 *.key
 *test.py
 *GPTCLI/__pycache__
-*GPT_CLI.egg-info
+*GPTCLI.egg-info
 *build
 *dist
 *__pycache__
 *chatgpt4_cli.egg-info
 *.vscode
+*__pycache__
+
