@@ -839,9 +839,9 @@ def main():
         if args.new_record and path.isfile(args.output):
             remove(args.output)
         run = main_gpt()
-        if args.message:
+        if args.message :
             run.default(
-                " ".join(args.message) if args.message is list else args.message
+                " ".join(run.parser(args.message)) if args.message is list else args.message
             )
         run.cmdloop()
     except (KeyboardInterrupt, EOFError):
