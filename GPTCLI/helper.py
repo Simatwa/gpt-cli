@@ -69,5 +69,5 @@ help = f"""
       e.g './ifconfig'
 * Use {{f.text-filename}} to issue prompt contained in  the 'text-filename'
 
-* _exit : To quit the program or `CTRL+C`
+* _exit or `CTRL+C` : Quits the program.
         """
