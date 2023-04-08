@@ -295,7 +295,7 @@ As a `terminal guy` I used to find it uncomfortable to keep shifting from one wi
 ### ToDo
 
 - [x] Use dialogue
-- [ ] Issue prompt from a file
+- [x] Issue prompt from a file
 - [ ] Busy bar
 
 ## Acknowledgements

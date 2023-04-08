@@ -309,6 +309,7 @@ from os import system, remove, path, environ, makedirs
 from threading import Thread as thr
 from appdirs import AppDirs
 from rich.markdown import Markdown
+from .addons import file_parser
 
 app_dir = AppDirs(
     "smartwa",
@@ -533,6 +534,7 @@ class main_gpt(cmd.Cmd):
     color_dict = config_handler.color_dict
     bcolor_dict = config_handler.bcolor_dict
     interactive = local_interactor()
+    parser = lambda self,line:file_parser(line).parse()
 
     def apply_color(self):
         print(
@@ -550,15 +552,14 @@ class main_gpt(cmd.Cmd):
         return resp
 
     def default(self, raw, return_fb=False):
-        if not bool(raw):
+        raw = self.parser(raw)
+        if not raw:
             return
         # out = lambda b: print(self.color_dict[args.output_color] + b + Fore.RESET)
         if raw[0:2] == "./":
             system((raw[2:]).strip())
             print()
         else:
-            if not bool(raw):
-                return
             args.message = raw
             print(self.color_dict[args.output_color], end="")
             rp = gpt3.main()
@@ -575,6 +576,9 @@ class main_gpt(cmd.Cmd):
 
     def do_txt2img(self, line):
         """Generate images based on GPT description"""
+        line = self.parser(line)
+        if not line:
+            return
         print(
             self.color_dict[args.output_color] + ">>[*] Querying description from GPT",
             end="\r",
@@ -598,6 +602,9 @@ class main_gpt(cmd.Cmd):
         self.do__prompt(self.prompt_disp)
                 
     def do_img(self, line):
+        line = self.parser(line)
+        if not line:
+            return
         """Text-to-Image handler"""
         print(self.color_dict[args.output_color], end="\r")
         resp = imager(line.split(" ")).main()
@@ -607,6 +614,9 @@ class main_gpt(cmd.Cmd):
         self.do__prompt(self.prompt_disp)
 
     def do_emg(self, line, args_parsed=False):
+        line = self.parser(line)
+        if not line:
+            return
         print(
             self.color_dict[args.input_color if args_parsed else args.output_color],
             end="\r",
@@ -629,6 +639,9 @@ class main_gpt(cmd.Cmd):
         self.do__prompt(self.prompt_disp)
 
     def do__prompt(self, line):
+        line = self.parser(line)
+        if not line:
+            return
         """Modify prompts"""
         self.prompt_disp = line
         self.prompt = time_now_format(line)
@@ -719,6 +732,9 @@ class main_gpt(cmd.Cmd):
 
         print(help)
         self.do__prompt(self.prompt_disp)
+
+    def do__exit(self,line):
+        return True
 
 
 def get_api_key() -> str:

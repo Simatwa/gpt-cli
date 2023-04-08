@@ -67,4 +67,7 @@ help = f"""
 
 * Use double `./` (fullstop and foward slash) to interact with system commands
       e.g './ifconfig'
+* Use {{f.text-filename}} to issue prompt contained in  the 'text-filename'
+
+* _exit : To quit the program or `CTRL+C`
         """
