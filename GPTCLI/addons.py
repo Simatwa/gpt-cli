@@ -1,8 +1,16 @@
 import re
 from os import remove, system
 from time import sleep
-from . import logging, getExc
+#from . import logging, getExc
+import logging
 
+logging.basicConfig(
+    format="%(levelname)s - %(message)s - (%(asctime)s)",
+    datefmt="%d-%b-%Y %H:%M:%S",
+    level=logging.INFO,
+)
+
+getExc = lambda e: e.args[1] if isinstance(e.args, list) else str(e)
 
 class file_parser:
     """Handles contents from text file"""
@@ -41,12 +49,17 @@ class system_control:
         self.prompt = prompt
         self.file_name = filename
         self.interpreter = interpreter
-        self.all_interpreters = ["python", "bash", "java", "php", "node"]
+        self.all_interpreters = ["bash", "python", "java", "php", "node"]
 
     def get_interpreter(self, commands: list) -> list:
-        if commands[0].replace("\n", "") in self.all_interpreters:
-            self.interpreter = commands[0]
-            commands.pop(0)
+        st = commands[0]
+        for inter in self.all_interpreters:
+            if st.startswith(inter):
+                commands.remove(st)
+                commands.insert(0,st.replace(inter,''))
+                self.interpreter = inter
+                break
+
         return list(set(commands))
 
     def get_command(self, raw: bool = False):
