@@ -1,8 +1,11 @@
 from setuptools import setup
 from GPTCLI import __version__,__author__,__repo__
+from os import path
+
+dirname = path.abspath(path.dirname(__file__))
 
 def get_file(fnm:str,lst:bool=False):
-    with open(fnm) as fh:
+    with open(path.join(dirname,fnm)) as fh:
         if lst:
             return fh.readlines()
         return fh.read()
