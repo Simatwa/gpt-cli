@@ -558,7 +558,6 @@ class main_gpt(cmd.Cmd):
         # out = lambda b: print(self.color_dict[args.output_color] + b + Fore.RESET)
         if raw[0:2] == "./":
             system((raw[2:]).strip())
-            print()
         else:
             args.message = raw
             print(self.color_dict[args.output_color], end="")
