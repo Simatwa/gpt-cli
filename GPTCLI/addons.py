@@ -76,6 +76,7 @@ class system_control:
         """Get commands and run them against system"""
         fnm = self.save(self.get_command(True))
         if fnm:
+            print()
             cmd = (
                 "sudo " + self.interpreter + " " + fnm
                 if sudo
