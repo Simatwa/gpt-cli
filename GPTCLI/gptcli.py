@@ -288,6 +288,11 @@ class config_handler:
             help="Download latest prompts - [awesome-chatgpt-prompts]",
             action="store_true",
         )
+        parser.add_argument(
+            "--sudo",
+            help="Run commands against system with sudo privileges",
+            action="store_true",
+        )
         return parser.parse_args()
 
     def main(self):
@@ -309,7 +314,7 @@ from os import system, remove, path, environ, makedirs
 from threading import Thread as thr
 from appdirs import AppDirs
 from rich.markdown import Markdown
-from .addons import file_parser
+from .addons import file_parser, system_control
 
 app_dir = AppDirs(
     "smartwa",
@@ -534,17 +539,17 @@ class main_gpt(cmd.Cmd):
     color_dict = config_handler.color_dict
     bcolor_dict = config_handler.bcolor_dict
     interactive = local_interactor()
-    parser = lambda self,line:file_parser(line).parse()
+    parser = lambda self, line: file_parser(line).parse()
 
     def apply_color(self):
         print(
             self.bcolor_dict[args.background_color] + self.color_dict[args.input_color]
         )
 
-    def prompt_is_error_free(self,prompt,resp=True) -> bool:
+    def prompt_is_error_free(self, prompt, resp=True) -> bool:
         """Checks if prompt contains [sorry]"""
-        if isinstance(prompt,list):
-            if len(prompt)>=2 and prompt[0:2]==["I'm","sorry"]:
+        if isinstance(prompt, list):
+            if len(prompt) >= 2 and prompt[0:2] == ["I'm", "sorry"]:
                 resp = False
         else:
             if prompt.startswith("I'm sorry"):
@@ -560,9 +565,9 @@ class main_gpt(cmd.Cmd):
         if raw[0:2] == "./":
             system((raw[2:]).strip())
         else:
-            if '--system' in raw:
+            if "--system" in raw:
                 run_against_system = True
-                raw=raw.replace('--system','')
+                raw = raw.replace("--system", "")
             args.message = raw
             print(self.color_dict[args.output_color], end="")
             rp = gpt3.main()
@@ -572,7 +577,7 @@ class main_gpt(cmd.Cmd):
                     return feedback.strip()
                 record_keeper.main(feedback)
                 if run_against_system:
-                    system(feedback.strip())
+                    system_control(feedback).execute(args.sudo)
 
             else:
                 logging.error(str(rp[1]))
@@ -605,7 +610,7 @@ class main_gpt(cmd.Cmd):
             if not description:
                 logging.error("Failed to generate description.")
         self.do__prompt(self.prompt_disp)
-                
+
     def do_img(self, line):
         line = self.parser(line)
         if not line:
@@ -738,7 +743,7 @@ class main_gpt(cmd.Cmd):
         print(help)
         self.do__prompt(self.prompt_disp)
 
-    def do__exit(self,line):
+    def do__exit(self, line):
         return True
 
 
@@ -799,7 +804,7 @@ def intro_train(
             logging.warning(error_msg)
     else:
         logging.warning(error_msg)
-    del prompt_dict,keys
+    del prompt_dict, keys
 
 
 def main():
@@ -812,11 +817,13 @@ def main():
     try:
         if args.gpt in ("4"):
             from revChatGPT.V3 import Chatbot
-            
+
             gpt4 = True
             chatbot = Chatbot(
                 api_key=args.api_key,
-                engine=args.model if args.model in config_h.v4models else "gpt-3.5-turbo",
+                engine=args.model
+                if args.model in config_h.v4models
+                else "gpt-3.5-turbo",
                 # timeout=args.timeout, #Available as from revChatGPT>=4.0.6.1
                 proxy=args.proxy,  #
                 max_tokens=args.max_tokens,
@@ -827,21 +834,24 @@ def main():
                 system_prompt=args.system_prompt
                 if args.system_prompt is str
                 else " ".join(args.system_prompt),
-                )
+            )
         else:
             gpt4 = False
             from revChatGPT.V0 import Chatbot
+
             chatbot = Chatbot(api_key=args.api_key, engine=args.model, proxy=args.proxy)
     except Exception as e:
         exit(logging.critical(getExc(e)))
-        
+
     try:
         if args.new_record and path.isfile(args.output):
             remove(args.output)
         run = main_gpt()
-        if args.message :
+        if args.message:
             run.default(
-                " ".join(run.parser(args.message)) if args.message is list else args.message
+                " ".join(run.parser(args.message))
+                if args.message is list
+                else args.message
             )
         run.cmdloop()
     except (KeyboardInterrupt, EOFError):
