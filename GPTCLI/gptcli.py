@@ -553,12 +553,16 @@ class main_gpt(cmd.Cmd):
 
     def default(self, raw, return_fb=False):
         raw = self.parser(raw)
+        run_against_system = False
         if not raw:
             return
         # out = lambda b: print(self.color_dict[args.output_color] + b + Fore.RESET)
         if raw[0:2] == "./":
             system((raw[2:]).strip())
         else:
+            if '--system' in raw:
+                run_against_system = True
+                raw=raw.replace('--system','')
             args.message = raw
             print(self.color_dict[args.output_color], end="")
             rp = gpt3.main()
@@ -567,6 +571,8 @@ class main_gpt(cmd.Cmd):
                 if return_fb:
                     return feedback.strip()
                 record_keeper.main(feedback)
+                if run_against_system:
+                    system(feedback.strip())
 
             else:
                 logging.error(str(rp[1]))
