@@ -1,17 +1,7 @@
 import re
 from os import remove, system
 from time import sleep
-#from . import logging, getExc
-import logging
-
-logging.basicConfig(
-    format="%(levelname)s - %(message)s - (%(asctime)s)",
-    datefmt="%d-%b-%Y %H:%M:%S",
-    level=logging.INFO,
-)
-
-getExc = lambda e: e.args[1] if isinstance(e.args, list) else str(e)
-
+from . import logging, getExc
 class file_parser:
     """Handles contents from text file"""
 
