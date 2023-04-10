@@ -81,7 +81,7 @@ After that you can launch the script with or without a prompt
 
 - Parsing OPENAI_API_KEY as one of the arguments
 
-Run `$ gpt-cli -k <gpt-api-key> <Your query>` at the terminal.
+Run `$ gpt-cli -k <openai-api-key> <Your query>` at the terminal.
 
 > For instance :
 
