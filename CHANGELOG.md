@@ -1,4 +1,4 @@
- ## v1.4.7
+ ## v1.4.8
 
   - Issue prompt from a file - `{f.filename}`
     > **note** File should be in the current directory
