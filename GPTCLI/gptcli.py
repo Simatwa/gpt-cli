@@ -399,7 +399,7 @@ class tracker:
         """Write prompts and responses in a file"""
         info_to_write = f"\n\n{date_stamp(args.prompt_prefix)}{args.message}\n\n{date_stamp(args.response_prefix)}{self.feedback}"
         try:
-            with open(self.filepath, "a") as fp:
+            with open(self.filepath, "a",encoding="utf-8") as fp:
                 fp.write(info_to_write)
         except Exception as e:
             logging.error(f"Failed to keep record - {getExc(e)}")
@@ -435,7 +435,7 @@ class intro_prompt_handler:
             for key, value in self.links.items():
                 resp = get(value)
                 if resp.status_code == 200:
-                    with open(path.join(app_dir, key), "w") as fh:
+                    with open(path.join(app_dir, key), "w",encoding="utf-8") as fh:
                         fh.write(resp.text)
                 else:
                     logging.error(
@@ -450,7 +450,7 @@ class intro_prompt_handler:
         """Read prompts and return in dict {act:prompt}"""
         import csv
 
-        with open(filename or self.fnm) as fh:
+        with open(filename or self.fnm,encoding="utf-8") as fh:
             for row in csv.DictReader(fh, delimiter=delimiter):
                 resp[row["act"]] = row["prompt"]
         return resp
@@ -488,7 +488,7 @@ class intro_prompt_handler:
                     )
                     x += 1
             else:
-                with open(args.dump, "w") as fh:
+                with open(args.dump, "w",encoding="utf-8") as fh:
                     from json import dumps
 
                     data = json.dumps(resp, indent=4)
@@ -753,7 +753,7 @@ def get_api_key() -> str:
         return args.key or environ.get("OPENAI_API_KEY")
     if args.key_path:
         try:
-            with open(args.key_path) as fh:
+            with open(args.key_path,encoding="utf-8") as fh:
                 return fh.readlines()[0]
         except Exception as e:
             exit(logging.critical("While opening Key_Path " + getExc(e)))
