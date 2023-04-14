@@ -24,9 +24,16 @@ setup(
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     classifiers=[
-        "License :: OSI Approved :: The Unlicense (Unlicense)",
+        "License :: OSI Approved :: MIT License",
+        "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
+        "Natural Language :: English",
+        "License :: Free For Home Use",
+        "Topic :: Home Automation"
+        "Intended Audience :: Customer Service",
+        "Programming Language :: Python"
         "Topic :: Software Development :: Libraries :: Python Modules",
+        "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",

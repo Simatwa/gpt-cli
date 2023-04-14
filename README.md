@@ -176,16 +176,21 @@ For more info run `$gpt-cli-image -h` or `$gpt-cli-emage -h`.
 
 11._help : Show this help info
 
-* Use double `./` *(fullstop and forward slash)* to interact with **system commands**
-  e.g './ifconfig'
+* Use double `./` *(fullstop and forward slash)* to interact with
+
+**system commands**
+
+  e.g ```./ifconfig```
+
 </details>
 
 <details>
+
 <summary>
 
-  For more info run `gpt-cli -h`.
+For more info run `gpt-cli -h`.
 
-  </summary>
+</summary>
 
 ```
 usage: gpt-cli [-h] [-v] [-m gpt-3.5-turbo|gpt-4|gpt-4-32k] [-t [0.1-1]]
@@ -272,7 +277,7 @@ optional arguments:
 
 ```
 
-  </details>
+</details>
 
 > **Note** : **gpt-4** *(model)* supports upto *7000* tokens and others *3000*.
 
@@ -282,9 +287,13 @@ optional arguments:
 ## Motive
 
 <details>
+
 <summary>
+
 Love for `Terminal` ❤️
+
 </summary>
+
 As a `terminal guy` I used to find it uncomfortable to keep shifting from one window to next in order to access ChatGPT even after trying out the [gpt-login](https://github.com/Simatwa/gpt-login), the rest is [here.](https://github.com/Simatwa/gpt-cli)
 </details>
 
