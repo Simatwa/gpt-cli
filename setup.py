@@ -29,9 +29,9 @@ setup(
         "Intended Audience :: Developers",
         "Natural Language :: English",
         "License :: Free For Home Use",
-        "Topic :: Home Automation"
+        "Topic :: Home Automation",
         "Intended Audience :: Customer Service",
-        "Programming Language :: Python"
+        "Programming Language :: Python",
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: 3.8",
