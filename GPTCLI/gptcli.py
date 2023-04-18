@@ -627,7 +627,9 @@ class main_gpt(cmd.Cmd):
         args.message = line
         print(self.color_dict[args.output_color], end="")
         if args.disable_stream:
-            info = self.bard.chat(line, False)
+            inf , info = self.bard.chat(line, False),''
+            for value in inf:
+                info = info+value
             gpt3.out(info)
         else:
             info = ""
@@ -635,7 +637,7 @@ class main_gpt(cmd.Cmd):
                 print(val, end="", flush=True)
                 info = info + val
         record_keeper.main(info)
-        print(Fore.RESET)
+        print(self.color_dict[args.input_color])
 
     def do_txt2img(self, line):
         """Generate images based on GPT description"""
@@ -907,13 +909,14 @@ def main():
                 else args.message
             )
             if args.bard:
-                run.bard(prompt)
+                run.do_bard(prompt)
             else:
                 run.default(prompt)
         run.cmdloop()
     except (KeyboardInterrupt, EOFError):
         exit(logging.info("Stopping program"))
     except Exception as e:
+        logging.exception(e)
         logging.error(getExc(e))
 
 

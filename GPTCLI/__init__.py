@@ -5,7 +5,7 @@ __repo__ = "https://github.com/Simatwa/gpt-cli"
 import logging
 
 logging.basicConfig(
-    format="%(levelname)s - %(message)s - (%(asctime)s)",
+    format="%(levelname)s - %(message)s - (%(asctime)s) [%(module)s,%(lineno)s]",
     datefmt="%d-%b-%Y %H:%M:%S",
     level=logging.INFO,
 )
@@ -23,12 +23,10 @@ def error_handler(resp=None):
     def wrapper(func):
         def main(*args, **kwargs):
             try:
-                rp = func(*args, **kwargs)
+                return func(*args, **kwargs)
             except Exception as e:
                 logging.error(getExc(e))
-                rp = resp() if callable(resp) else resp
-            finally:
-                return rp
+                return resp() if callable(resp) else resp
 
         return main
 

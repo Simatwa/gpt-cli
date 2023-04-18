@@ -2,7 +2,7 @@ from Bard import Chatbot
 from . import logging, error_handler
 from sys import exit
 from os import environ
-from json import loads
+from json import load
 from time import sleep
 
 
@@ -11,7 +11,7 @@ class Bard:
         self.args = args
         self.session = environ.get("BARD_SESSION") or self.__get_sess()
         self.active_link = Chatbot(self.session)
-
+        
     @error_handler(exit)
     def __get_sess(self):
         """Gets Bard's session"""
@@ -24,7 +24,7 @@ class Bard:
             else:
                 resp = None
                 with open(self.args.bcookie_file) as fh:
-                    entries = loads(fh)
+                    entries = load(fh)
                 for entry in entries:
                     if entry["name"] == "__Secure-1PSID":
                         resp = entry["value"]
@@ -46,9 +46,11 @@ class Bard:
         if not self.session:
             return logging.error("Bard's session not found!")
         resp = self.active_link.ask(prompt)["content"]
-        if stream:
+        if stream and not self.args.disable_stream:
             for value in resp:
                 yield value
                 sleep(self.args.stream_interval)
         else:
-            return resp["content"]
+            for val in resp:
+                yield val
+
