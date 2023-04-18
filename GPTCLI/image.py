@@ -101,7 +101,7 @@ class imager:
                 makedirs(self.args.dir)
             cpath = path.join(
                 self.args.dir,
-                f'{self.args.output}{self.save_count if self.save_count else ""}.jpeg',
+                f'{self.args.output}{self.save_count if self.save_count else ""}.jpg',
             )
             if path.isfile(cpath):
                 self.save_count += 1
