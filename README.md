@@ -160,7 +160,7 @@ For more info run `$gpt-cli-image -h` or `$gpt-cli-emage -h`.
  - e.g ```background_color cyan```
 
 6._prompt : Modify CMD prompt
- - e.g ```prompt ┌─[Smartwa@ChatGPT4]─(%H:%M:%S)```
+ - e.g ```prompt ┌─[Smartwa@GPT-CLI]─(%H:%M:%S)```
 
 7._load : Load configurations from the json file
  - e.g ```load DAN.json```
@@ -174,13 +174,20 @@ For more info run `$gpt-cli-image -h` or `$gpt-cli-emage -h`.
 10._reset : Reset current chat and start new
  - e.g ```_reset Chat as if you are a 10 year old child```
 
-11._help : Show this help info
+11.bard : Specifies to use bard GPT
+ - e.g ```bard Explain the composite concept in business```
 
-* Use double `./` *(fullstop and forward slash)* to interact with
+12.gpt4 : Specifies to use ChatGPT in case `--bard` was made default
+ - e.g ```gpt4 How do you make?```
 
-**system commands**
+13._help : Show this help info
 
-  e.g ```./ifconfig```
+* Use  `./` (fullstop and forward slash) to interact with **system commands**
+ - e.g ```./ifconfig```
+
+> **Note** You can further specify the GPT to be used by appending `--gpt4` or `--bard` in the prompt.
+
+* Use *{{f.text-filename}}* to issue prompt contained in the 'text-filename'
 
 </details>
 
@@ -193,6 +200,11 @@ For more info run `gpt-cli -h`.
 </summary>
 
 ```
+╭─────────────────────────────── gpt-cli v1.4.9 ───────────────────────────────╮
+│                                                                              │
+│             Repo : https://github.com/Simatwa/gpt-cli                        │
+│             By   : Smartwa Caleb                                             │
+╰──────────────────────────────────────────────────────────────────────────────╯
 usage: gpt-cli [-h] [-v] [-m gpt-3.5-turbo|gpt-4|gpt-4-32k] [-t [0.1-1]]
                [-mt [1-7000]] [-tp [0.1-1]] [-f [0.1-2]] [-p [0.1-2]] [-k KEY]
                [-kp path] [-ic [cyan|green|yellow|red]]
@@ -200,9 +212,10 @@ usage: gpt-cli [-h] [-v] [-m gpt-3.5-turbo|gpt-4|gpt-4-32k] [-t [0.1-1]]
                [-pc [cyan|green|yellow|red]] [--prompt [SETTINGS ...]]
                [-tm value] [-pr PROXY] [-rc value] [-g 1,4] [-sp [text ...]]
                [-fp path] [-o path] [-pp prefix] [-rp prefix]
-               [-dm keys|values|show|{fnm}] [-dl symbol] [-cf path]
-               [--disable-stream] [--new-record] [--disable-recording]
-               [--zero-show] [--markdown] [--update]
+               [-dm keys|values|show|{fnm}] [-dl symbol] [-cf path] [-bk KEY]
+               [-bkp PATH] [-bcf PATH] [-si TIME] [--disable-stream]
+               [--new-record] [--disable-recording] [--zero-show] [--bard]
+               [--markdown] [--update] [--sudo]
                [message ...]
 
 Interact with ChatGPT at the terminal
@@ -210,7 +223,7 @@ Interact with ChatGPT at the terminal
 positional arguments:
   message               Message to be send.
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -v, --version         show program's version number and exit
   -m gpt-3.5-turbo|gpt-4|gpt-4-32k, --model gpt-3.5-turbo|gpt-4|gpt-4-32k
@@ -256,7 +269,7 @@ optional arguments:
                         [/home/smartwa/git/gpt-cli/.chatgpt-history.txt]
   -pp prefix, --prompt-prefix prefix
                         Text to append before saving each prompt - default
-                        [>>timestamp]
+                        [>>> timestamp]
   -rp prefix, --response-prefix prefix
                         Text to append before saving each response - default
                         [None]
@@ -267,13 +280,23 @@ optional arguments:
                         Delimeter for the .CSV file - [act,prompt]
   -cf path, --cookie-file path
                         Path to Bing's cookies - for Edge Image Generation
+  -bk KEY, --bard-key KEY
+                        Bard's session value
+  -bkp PATH, --bard-key-path PATH
+                        Path to Bard's key path
+  -bcf PATH, --bard-cookie-file PATH
+                        Path to Bard's cookie file
+  -si TIME, --stream-interval TIME
+                        Interval for printing responses in (s)
   --disable-stream      Specifies not to stream responses from ChatGPT
   --new-record          Override previous chats under the filepath
   --disable-recording   Disable saving prompts and responses
   --zero-show           Specifies not to stdout prompt of the act parsed
+  --bard                Make Bard the default GPT
   --markdown            Stdout responses in markdown-format - disables
                         streaming
   --update              Download latest prompts - [awesome-chatgpt-prompts]
+  --sudo                Run commands against system with sudo privileges
 
 ```
 
@@ -283,6 +306,7 @@ optional arguments:
 
 > **Warning** : **gpt-1**  Has issues - *(To be fixed later)*
 
+Visit [acheong08/Bard](https://github.com/acheong08/Bard) for info on how to get the Bard's cookie file and Sessions.
 
 ## Motive
 

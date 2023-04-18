@@ -258,6 +258,10 @@ class config_handler:
             help="Path to Bing's cookies - for Edge Image Generation",
             metavar="path",
         )
+        parser.add_argument('-bk','--bard-key',dest='bkey',metavar='KEY',help="Bard's session value")
+        parser.add_argument('-bkp','--bard-key-path',dest='bkey_path',metavar='PATH',help="Path to Bard's key path")
+        parser.add_argument('-bcf','--bard-cookie-file',dest='bcookie_file',metavar='PATH',help="Path to Bard's cookie file")
+        parser.add_argument('-si','--stream-interval',metavar='TIME',help='Interval for printing responses in (s)',type=float,default=0.01)
         parser.add_argument(
             "--disable-stream",
             help="Specifies not to stream responses from ChatGPT",
@@ -278,6 +282,7 @@ class config_handler:
             help="Specifies not to stdout prompt of the act parsed",
             action="store_true",
         )
+        parser.add_argument('--bard',help='Make Bard the default GPT',action='store_true')
         parser.add_argument(
             "--markdown",
             help="Stdout responses in markdown-format - disables streaming",
@@ -315,6 +320,7 @@ from threading import Thread as thr
 from appdirs import AppDirs
 from rich.markdown import Markdown
 from .addons import file_parser, system_control
+from .bard import Bard
 
 app_dir = AppDirs(
     "smartwa",
@@ -540,7 +546,7 @@ class main_gpt(cmd.Cmd):
     bcolor_dict = config_handler.bcolor_dict
     interactive = local_interactor()
     parser = lambda self, line: file_parser(line).parse()
-
+    bard = Bard(args)
     def apply_color(self):
         print(
             self.bcolor_dict[args.background_color] + self.color_dict[args.input_color]
@@ -556,7 +562,7 @@ class main_gpt(cmd.Cmd):
                 resp = False
         return resp
 
-    def default(self, raw, return_fb=False):
+    def default(self, raw, return_fb=False,no_check=False):
         raw = self.parser(raw)
         run_against_system = False
         if not raw:
@@ -568,6 +574,8 @@ class main_gpt(cmd.Cmd):
             if "--system" in raw:
                 run_against_system = True
                 raw = raw.replace("--system", "")
+            if any(['--bard' in raw, args.bard]) and not no_check:
+                return self.do_bard(raw.replace('--bard',''))
             args.message = raw
             print(self.color_dict[args.output_color], end="")
             rp = gpt3.main()
@@ -583,6 +591,31 @@ class main_gpt(cmd.Cmd):
                 logging.error(str(rp[1]))
             print(Fore.RESET)
         self.do__prompt(self.prompt_disp)
+    
+    def do_gpt4(self,line):
+        """Interact with ChatGPT4"""
+        self.default(line,no_check=True)
+
+    def do_bard(self,line):
+        """Interact with Google's bard
+        """
+        if '--gpt4' in line:
+            return self.default(line.replace('--gpt4',''),no_check=True)
+
+        args.message = line
+        print(self.color_dict[args.output_color], end="")
+        if args.disable_stream:
+            info = self.bard.chat(line,False)
+            gpt3.out(info)
+        else:
+            info = ''
+            for val in self.bard.chat(line):
+                print(val,end='',flush=True)
+                info = info+val
+        record_keeper.main(info)
+        print(Fore.RESET)
+
+
 
     def do_txt2img(self, line):
         """Generate images based on GPT description"""
@@ -848,11 +881,11 @@ def main():
             remove(args.output)
         run = main_gpt()
         if args.message:
-            run.default(
-                " ".join(run.parser(args.message))
-                if args.message is list
-                else args.message
-            )
+            prompt =  " ".join(run.parser(args.message)) if args.message is list else args.message
+            if args.bard:
+                run.bard(prompt)
+            else:
+                run.default(prompt)
         run.cmdloop()
     except (KeyboardInterrupt, EOFError):
         exit(logging.info("Stopping program"))

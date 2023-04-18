@@ -6,3 +6,7 @@
     > **warning** Use at your own risk!
   - Quit program - `_exit`
   - Over 170 prompts 
+
+## v1.5.0
+
+ - Chat with Bard GPT conversationally.

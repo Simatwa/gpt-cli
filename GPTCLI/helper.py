@@ -63,7 +63,15 @@ help = f"""
 9. _reset : Reset current chat and start new
     e.g '_reset Chat as if you are a 10 year old child'
 
-10. _help : Show this help info
+11. bard : Specifies to use bard GPT
+    e.g bard Explain the composite concept in business.
+
+12. gpt4 : Specifies to use ChatGPT in case `--bard` was made default
+    e.g gpt4 How do you make?
+
+13. _help : Show this help info
+
+* You can further specify the GPT to be used by appending `--gpt4` or `--bard` in the prompt.
 
 * Use double `./` (fullstop and foward slash) to interact with system commands
       e.g './ifconfig'
