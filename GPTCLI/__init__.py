@@ -12,20 +12,24 @@ logging.basicConfig(
 
 getExc = lambda e: e.args[1] if isinstance(e.args, list) else str(e)
 
+
 def error_handler(resp=None):
     """Handle exceptions
 
     Args:
         resp (Any, optional): Value to be returned incase of exception. Defaults to None.
     """
+
     def wrapper(func):
-        def main(*args,**kwargs):
+        def main(*args, **kwargs):
             try:
-                rp = func(*args,**kwargs)
+                rp = func(*args, **kwargs)
             except Exception as e:
                 logging.error(getExc(e))
                 rp = resp() if callable(resp) else resp
             finally:
                 return rp
+
         return main
+
     return wrapper

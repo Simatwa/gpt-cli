@@ -2,6 +2,8 @@ import re
 from os import remove, system
 from time import sleep
 from . import logging, getExc
+
+
 class file_parser:
     """Handles contents from text file"""
 
@@ -46,7 +48,7 @@ class system_control:
         for inter in self.all_interpreters:
             if st.startswith(inter):
                 commands.remove(st)
-                commands.insert(0,st.replace(inter,''))
+                commands.insert(0, st.replace(inter, ""))
                 self.interpreter = inter
                 break
 
