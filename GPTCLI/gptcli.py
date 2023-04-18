@@ -857,7 +857,7 @@ def main():
     except (KeyboardInterrupt, EOFError):
         exit(logging.info("Stopping program"))
     except Exception as e:
-        print(getExc(e))
+        logging.error(getExc(e))
 
 
 if __name__ == "__main__":

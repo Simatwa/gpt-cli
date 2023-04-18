@@ -109,5 +109,5 @@ class system_control:
 
 
 if __name__ == "__main__":
-    st = file_parser("I want youn to debug this python code {f.test.py}")
+    st = file_parser("I want you to debug this python code {f.test.py}")
     print(st.parse)
