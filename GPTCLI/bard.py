@@ -26,7 +26,7 @@ class Bard:
                 with open(self.args.bcookie_file) as fh:
                     entries = loads(fh)
                 for entry in entries:
-                    if entry["value"] == "__Secure-1PSID":
+                    if entry["name"] == "__Secure-1PSID":
                         resp = entry["value"]
             return resp
         else:
