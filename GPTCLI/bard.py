@@ -11,7 +11,7 @@ class Bard:
         self.args = args
         self.session = environ.get("BARD_SESSION") or self.__get_sess()
         self.active_link = Chatbot(self.session)
-        
+
     @error_handler(exit)
     def __get_sess(self):
         """Gets Bard's session"""
@@ -53,4 +53,3 @@ class Bard:
         else:
             for val in resp:
                 yield val
-

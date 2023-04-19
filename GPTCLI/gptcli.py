@@ -333,7 +333,7 @@ from sys import exit, stderr
 import json
 import openai
 import cmd
-from . import logging, getExc
+from . import logging, getExc, error_handler
 from .image import imager
 from .emage import emager
 from re import sub
@@ -589,6 +589,7 @@ class main_gpt(cmd.Cmd):
         raw = self.parser(raw)
         run_against_system = False
         if not raw:
+            self.do__prompt(self.prompt_disp)
             return
         # out = lambda b: print(self.color_dict[args.output_color] + b + Fore.RESET)
         if raw[0:2] == "./":
@@ -619,30 +620,73 @@ class main_gpt(cmd.Cmd):
         """Interact with ChatGPT4"""
         self.default(line, no_check=True)
 
-    def do_bard(self, line):
+    def do_bard(self, line, return_fb=False, chat=False):
         """Interact with Google's bard"""
         if "--gpt4" in line:
             return self.default(line.replace("--gpt4", ""), no_check=True)
 
         args.message = line
-        print(self.color_dict[args.output_color], end="")
+        if chat:
+            print(self.color_dict[args.input_color], end="")
+        else:
+            print(self.color_dict[args.output_color], end="")
         if args.disable_stream:
-            inf , info = self.bard.chat(line, False),''
+            inf, info = self.bard.chat(line, False), ""
             for value in inf:
-                info = info+value
+                info = info + value
             gpt3.out(info)
         else:
             info = ""
             for val in self.bard.chat(line):
                 print(val, end="", flush=True)
                 info = info + val
-        record_keeper.main(info)
+        if not chat:
+            record_keeper.main(info)
         print(self.color_dict[args.input_color])
+        self.do__prompt(self.prompt_disp)
+        if return_fb:
+            return info
+
+    @error_handler()
+    def do__botchat(self, line):
+        rich_print("Let the bots talk:")
+
+        def get_value(msg: str, type1: object = str) -> str:
+            while True:
+                val = input(f"[*] " + msg + f" >>")
+                if val:
+                    if type1 == int:
+                        if val.isdigit():
+                            return int(val)
+                    else:
+                        return val
+
+        def gpt_chat(msg):
+            print("[ChatGPT]")
+            return self.default(msg, return_fb=True)
+
+        def bard_chat(msg):
+            print("[Bard]")
+            return self.do_bard(bard, return_fb=True, chat=True)
+
+        gpt = get_value("Enter prompt for ChatGPT")
+        bard = get_value("Enter prompt for Bard")
+        amount = get_value("Enter amount of chat cycles [0 - infinity]", int)
+        for x in range(amount if amount else 1000000):
+            if x == 0:
+                gpt = gpt_chat(gpt)
+                bard = bard_chat(bard)
+            else:
+                if x % 2 == 0:
+                    bard = bard_chat(gpt)
+                else:
+                    gpt = gpt_chat(bard)
 
     def do_txt2img(self, line):
         """Generate images based on GPT description"""
         line = self.parser(line)
         if not line:
+            self.do__prompt(self.prompt_disp)
             return
         print(
             self.color_dict[args.output_color] + ">>[*] Querying description from GPT",
@@ -809,7 +853,7 @@ def get_api_key() -> str:
     if args.key_path:
         try:
             with open(args.key_path, encoding="utf-8") as fh:
-                return fh.readlines()[0]
+                return fh.readlines()[0].replace("\n", "")
         except Exception as e:
             exit(logging.critical("While opening Key_Path " + getExc(e)))
 
@@ -862,6 +906,7 @@ def intro_train(
     del prompt_dict, keys
 
 
+@error_handler()
 def main():
     global chatbot, gpt4, record_keeper
     args.disable_stream = True if args.markdown else args.disable_stream

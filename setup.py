@@ -20,7 +20,7 @@ setup(
         "appdirs>=1.4.4",
         "requests>=2.28.2",
         "tabulate>=0.9.0",
-        "GoogleBard==0.0.7"
+        "GoogleBard==0.0.7",
     ],
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",

@@ -10,3 +10,4 @@
 ## v1.5.0
 
  - Chat with Bard GPT conversationally.
+ - GPTs chat to each other

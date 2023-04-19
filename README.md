@@ -10,8 +10,8 @@
 <a href="https://pepy.tech/project/chatgpt4-cli"><img src="https://static.pepy.tech/badge/chatgpt4-cli" alt="Downloads"/></a>
 </p>
 
-CLI tool for interacting with [ChatGPT](https://openai.com). 
-> Chat and generate images.
+CLI tool for interacting with [ChatGPT](https://openai.com) and [Bard](https://bard.google.com). 
+> Generate images with Bing and ChatGPT's DALL-E model.
 
 ![screenshot](https://github.com/Simatwa/gpt-cli/raw/main/assets/Screenshot1.png)
 
@@ -24,13 +24,14 @@ CLI tool for interacting with [ChatGPT](https://openai.com).
 
 ### Features
 
-- Chat with ChatGPT conversationally.
-- Stream or Non-stream responses
-- Maintain record of the chats
-- Generate Images - Based on your prompt or ChatGPT generated description
-- Parse [awesome-chatgpt-prompts](https://github.com/f/awesome-chatgpt-prompts) easily
-- Fully customizable Commandline Interface
-- Interact with system commands on the fly
+- Chat with ChatGPT and Bard conversationally.
+- Let **ChatGPT** and **Bard** chat to each other.
+- Generate Images - Based on your prompt or GPT generated description.
+- Stream or Non-stream responses.
+- Maintain record of the chats.
+- Parse [awesome-chatgpt-prompts](https://github.com/f/awesome-chatgpt-prompts) easily.
+- Fully customizable Commandline Interface.
+- Interact with system commands on the fly.
 
 ### Prerequisites
 
@@ -184,6 +185,8 @@ For more info run `$gpt-cli-image -h` or `$gpt-cli-emage -h`.
 
 * Use  `./` (fullstop and forward slash) to interact with **system commands**
  - e.g ```./ifconfig```
+
+ * Use `_botchat` to let the 2 GPTs chat to each other
 
 > **Note** You can further specify the GPT to be used by appending `--gpt4` or `--bard` in the prompt.
 
