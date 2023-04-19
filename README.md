@@ -37,6 +37,10 @@ CLI tool for interacting with [ChatGPT](https://openai.com) and [Bard](https://b
 
 - [x] [OPENAI_API_KEY](https://platform.openai.com/account/api-keys)
 
+- [x] [Bard Cookies](https://bard.google.com)
+
+- [x] [Bing cookies](https://bing.com)
+
 ## Installation
 
 Either of the following ways will get you ready.
