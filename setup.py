@@ -9,7 +9,7 @@ setup(
     author=__author__,
     maintainer=__author__,
     author_email="smartwacaleb@gmail.com",
-    description="Terminal for ChatGPT",
+    description="Interact with ChatGPT and Bard at the terminal.",
     url=__repo__,
     project_urls={"Bug Report": f"{__repo__}/issues/new"},
     install_requires=[

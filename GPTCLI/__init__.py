@@ -5,7 +5,7 @@ __repo__ = "https://github.com/Simatwa/gpt-cli"
 import logging
 
 logging.basicConfig(
-    format="%(levelname)s - %(message)s - (%(asctime)s) [%(module)s,%(lineno)s]",
+    format="%(levelname)s - %(message)s - (%(asctime)s) ",#[%(module)s,%(lineno)s]",
     datefmt="%d-%b-%Y %H:%M:%S",
     level=logging.INFO,
 )
