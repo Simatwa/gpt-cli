@@ -344,6 +344,7 @@ from appdirs import AppDirs
 from rich.markdown import Markdown
 from .addons import file_parser, system_control
 from .bard import Bard
+from time import sleep
 
 app_dir = AppDirs(
     "smartwa",
@@ -648,13 +649,13 @@ class main_gpt(cmd.Cmd):
         if return_fb:
             return info
 
-    @error_handler()
+    @error_handler(False)
     def do__botchat(self, line):
         rich_print("Let the bots talk:")
 
         def get_value(msg: str, type1: object = str) -> str:
             while True:
-                val = input(f"[*] " + msg + f" >>")
+                val = input(f"[*] " + msg + " >>")
                 if val:
                     if type1 == int:
                         if val.isdigit():
@@ -663,25 +664,31 @@ class main_gpt(cmd.Cmd):
                         return val
 
         def gpt_chat(msg):
-            print("[ChatGPT]")
+            print(">>[ChatGPT]")
             return self.default(msg, return_fb=True)
 
         def bard_chat(msg):
-            print("[Bard]")
-            return self.do_bard(bard, return_fb=True, chat=True)
+            print("\n<<[Bard]")
+            return self.do_bard(msg, return_fb=True, chat=True)
 
-        gpt = get_value("Enter prompt for ChatGPT")
-        bard = get_value("Enter prompt for Bard")
+        gpt_ = get_value("Enter prompt for ChatGPT")
+        bard_ = get_value("Enter prompt for Bard")
         amount = get_value("Enter amount of chat cycles [0 - infinity]", int)
-        for x in range(amount if amount else 1000000):
-            if x == 0:
-                gpt = gpt_chat(gpt)
-                bard = bard_chat(bard)
-            else:
-                if x % 2 == 0:
-                    bard = bard_chat(gpt)
-                else:
-                    gpt = gpt_chat(bard)
+        interval = get_value("Enter sleep interval in each chat (s) - preferred 0", int)
+        gpt = gpt_chat(gpt_)
+        bard = bard_chat(bard_)
+        while amount if amount else True:
+            args.message = gpt
+            record_keeper.main(bard)
+            gpt = gpt_chat(bard)
+            bard = bard_chat(gpt)
+            if interval:
+                sleep_duration = interval
+                print()
+                while sleep_duration > 1:
+                    print(f">>[*] Resume in the count of {sleep_duration}", end="\r")
+                    sleep_duration -= 1
+                    sleep(1)
 
     def do_txt2img(self, line):
         """Generate images based on GPT description"""
@@ -962,7 +969,7 @@ def main():
     except (KeyboardInterrupt, EOFError):
         exit(logging.info("Stopping program"))
     except Exception as e:
-        logging.exception(e)
+        # logging.exception(e)
         logging.error(getExc(e))
 
 

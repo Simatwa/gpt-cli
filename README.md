@@ -10,7 +10,7 @@
 <a href="https://pepy.tech/project/chatgpt4-cli"><img src="https://static.pepy.tech/badge/chatgpt4-cli" alt="Downloads"/></a>
 </p>
 
-CLI tool for interacting with [ChatGPT](https://openai.com) and [Bard](https://bard.google.com). 
+CLI tool for interacting with [ChatGPT](https://openai.com) and [Bard](https://bard.google.com).
 > Generate images with Bing and ChatGPT's DALL-E model.
 
 ![screenshot](https://github.com/Simatwa/gpt-cli/raw/main/assets/Screenshot1.png)
