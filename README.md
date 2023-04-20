@@ -26,7 +26,7 @@ CLI tool for interacting with [ChatGPT](https://openai.com) and [Bard](https://b
 
 - Chat with ChatGPT and Bard conversationally.
 - Let **ChatGPT** and **Bard** chat to each other.
-- Generate Images - Based on your prompt or GPT generated description.
+- Generate Images (DALL-E & BingImageCreator)- Based on your prompt or GPT generated description.
 - Stream or Non-stream responses.
 - Maintain record of the chats.
 - Parse [awesome-chatgpt-prompts](https://github.com/f/awesome-chatgpt-prompts) easily.
@@ -39,7 +39,7 @@ CLI tool for interacting with [ChatGPT](https://openai.com) and [Bard](https://b
 
 - [x] [Bard Cookies](https://bard.google.com)
 
-- [x] [Bing cookies](https://bing.com)
+- [x] [Bing cookies](https://bing.com) - *optional*
 
 ## Installation
 
