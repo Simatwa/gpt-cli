@@ -1,5 +1,5 @@
 from Bard import Chatbot
-from . import logging, error_handler
+from . import logging, error_handler,getExc
 from sys import exit
 from os import environ
 from json import load
@@ -10,7 +10,10 @@ class Bard:
     def __init__(self, args: object):
         self.args = args
         self.session = environ.get("BARD_SESSION") or self.__get_sess()
-        self.active_link = Chatbot(self.session)
+        try:
+            self.active_link = Chatbot(self.session)
+        except Exception as e:
+            exit(logging.critical(getExc(e)))
 
     @error_handler(exit)
     def __get_sess(self):
