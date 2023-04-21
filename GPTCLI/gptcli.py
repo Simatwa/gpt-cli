@@ -683,11 +683,11 @@ class main_gpt(cmd.Cmd):
             gpt = gpt_chat(bard)
             bard = bard_chat(gpt)
             if interval:
-                sleep_duration = interval
+                sleep_duration = 0
                 print()
-                while sleep_duration > 1:
-                    print(f">>{sleep_duration}", end="\r")
-                    sleep_duration -= 1
+                while sleep_duration != interval:
+                    sleep_duration += 1
+                    print(f">[{interval}]<{sleep_duration}", end="\r")
                     sleep(1)
 
     def do_txt2img(self, line):
