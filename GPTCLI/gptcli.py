@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from . import __version__, __author__, __repo__
+from . import __version__, __author__, __repo__, __info__
 from colorama import Fore, Back
 from os import getlogin, getcwd, path
 from rich.console import Console
@@ -61,7 +61,7 @@ class config_handler:
         rich_print(intro)
 
         parser = argparse.ArgumentParser(
-            description="Interact with ChatGPT at the terminal"
+            description=__info__
         )
         parser.add_argument(
             "-v", "--version", action="version", version=f"%(prog)s v{__version__}"

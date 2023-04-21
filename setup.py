@@ -1,5 +1,5 @@
 from setuptools import setup
-from GPTCLI import __version__, __author__, __repo__
+from GPTCLI import __version__, __author__, __repo__, __info__
 
 setup(
     name="chatgpt4-cli",
@@ -9,7 +9,7 @@ setup(
     author=__author__,
     maintainer=__author__,
     author_email="smartwacaleb@gmail.com",
-    description="Interact with ChatGPT and Bard at the terminal.",
+    description=__info__,
     url=__repo__,
     project_urls={"Bug Report": f"{__repo__}/issues/new"},
     install_requires=[
