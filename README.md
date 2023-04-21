@@ -11,7 +11,7 @@
 </p>
 
 CLI tool for interacting with [ChatGPT](https://openai.com) and [Bard](https://bard.google.com).
-> Generate images with Bing and ChatGPT's DALL-E model.
+> Generate images with BingImageCreator and ChatGPT's DALL-E models.
 
 ![screenshot](https://github.com/Simatwa/gpt-cli/raw/main/assets/Screenshot1.png)
 
