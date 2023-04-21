@@ -686,10 +686,9 @@ class main_gpt(cmd.Cmd):
                 sleep_duration = interval
                 print()
                 while sleep_duration > 1:
-                    print(f">>[*] Resume in the count of {sleep_duration}", end="\r")
+                    print(f">>{sleep_duration}", end="\r")
                     sleep_duration -= 1
                     sleep(1)
-                print(end='\r')
 
     def do_txt2img(self, line):
         """Generate images based on GPT description"""
