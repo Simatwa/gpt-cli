@@ -569,7 +569,7 @@ class main_gpt(cmd.Cmd):
     bcolor_dict = config_handler.bcolor_dict
     interactive = local_interactor()
     parser = lambda self, line: file_parser(line).parse()
-    if not args.update:
+    if not any([args.update,args.dump]):
         bard = Bard(args)
 
     def apply_color(self):
