@@ -569,8 +569,12 @@ class main_gpt(cmd.Cmd):
     bcolor_dict = config_handler.bcolor_dict
     interactive = local_interactor()
     parser = lambda self, line: file_parser(line).parse()
-    if not any([args.update,args.dump]):
+    if any([args.bkey,args.bkey_path,args.bcookie_file]):
         bard = Bard(args)
+    elif args.bard:
+        exit(logging.critical("Bard's cookie file is required"))
+    elif not any([args.dump,args.update]):
+        logging.warning("Cannot use Bard, since cookie file is missing.")
 
     def apply_color(self):
         print(
