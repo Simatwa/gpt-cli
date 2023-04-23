@@ -19,3 +19,7 @@
 ## V1.5.2
 
 - Sleep interval at each complete chat - `_botchat  `
+
+## v1.5.3
+
+- Bard is optional
