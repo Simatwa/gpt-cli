@@ -3,6 +3,7 @@ from os import remove, system
 from time import sleep
 from . import logging, getExc
 from threading import Thread as thr
+from sys import exit
 
 
 class file_parser:
@@ -144,7 +145,26 @@ class progress:
         if cls.querying:
             cls.querying = False
             sleep(cls.sleep_time)
-
+    
+    @classmethod
+    def run(cls):
+        """Handles GPT querying functions
+        """
+        def decorator(func):
+            def main(*args,**kwargs):
+                try:
+                    return func(*args,**kwargs)
+                except KeyboardInterrupt:
+                    cls.stop_spinning()
+                    return 
+                except EOFError:
+                    cls.querying = False
+                    exit(logging.info("Stopping program"))
+                except Exception as e:
+                    cls.stop_spinning()
+                    logging.error(getExc(e))
+            return main
+        return decorator
 
 if __name__ == "__main__":
     st = file_parser("I want you to debug this python code {f.test.py}")

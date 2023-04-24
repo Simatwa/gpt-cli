@@ -601,7 +601,8 @@ class main_gpt(cmd.Cmd):
             if prompt.startswith("I'm sorry"):
                 resp = False
         return resp
-
+    
+    @progress.run()
     def default(self, raw, return_fb=False, no_check=False):
         raw = self.parser(raw)
         run_against_system = False
@@ -630,7 +631,7 @@ class main_gpt(cmd.Cmd):
                     system_control(feedback).execute(args.sudo)
 
             else:
-                progress.querying = False
+                progress.stop_spinning()
                 logging.error(str(rp[1]))
             print(Fore.RESET)
         self.do__prompt(self.prompt_disp)
@@ -639,6 +640,7 @@ class main_gpt(cmd.Cmd):
         """Interact with ChatGPT4"""
         self.default(line, no_check=True)
 
+    @progress.run()
     def do_bard(self, line, return_fb=False, chat=False):
         """Interact with Google's bard"""
         progress.display_bar(args)

@@ -25,3 +25,4 @@
 - Bard is optional
 - Busy bar
 - Appdir - `gpt-cli`
+- Cancel request - `CTRL+C`

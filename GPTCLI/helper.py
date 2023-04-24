@@ -80,5 +80,7 @@ help = f"""
       
 * Use {{f.text-filename}} to issue prompt contained in  the 'text-filename'
 
-* _exit or `CTRL+C` : Quits the program.
+* Use `CTRL+C` to cancel a request 
+
+* _exit or `CTRL+C` or `CTRL+Z` : Quits the program.
         """
