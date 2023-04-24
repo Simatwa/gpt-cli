@@ -26,3 +26,11 @@
 - Busy bar
 - Appdir - `gpt-cli`
 - Cancel request - `CTRL+C`
+
+## v1.5.4
+
+- Over 180 prompts
+
+## v1.5.5
+
+- Prompt ID name  - `GPT-CLI`

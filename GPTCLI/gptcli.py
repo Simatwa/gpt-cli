@@ -176,7 +176,7 @@ class config_handler:
         parser.add_argument(
             "--prompt",
             help="Customizes the prompt display",
-            default=f"┌─[{getlogin().capitalize()}@GPTs]─(%H:%M:%S)",
+            default=f"┌─[{getlogin().capitalize()}@GPT-CLI]─(%H:%M:%S)",
             dest="settings",
             nargs="*",
         )
