@@ -60,9 +60,7 @@ class config_handler:
         intro = Panel(disp, title=f"gpt-cli v{__version__}", style=gstyle)
         rich_print(intro)
 
-        parser = argparse.ArgumentParser(
-            description=__info__
-        )
+        parser = argparse.ArgumentParser(description=__info__)
         parser.add_argument(
             "-v", "--version", action="version", version=f"%(prog)s v{__version__}"
         )
@@ -284,6 +282,15 @@ class config_handler:
             default=0.01,
         )
         parser.add_argument(
+            "-spin",
+            "--spinner",
+            choices=[1, 2],
+            type=int,
+            help="Busy bar indicator",
+            metavar="1|2",
+            default=2,
+        )
+        parser.add_argument(
             "--disable-stream",
             help="Specifies not to stream responses from ChatGPT",
             action="store_true",
@@ -342,13 +349,13 @@ from os import system, remove, path, environ, makedirs
 from threading import Thread as thr
 from appdirs import AppDirs
 from rich.markdown import Markdown
-from .addons import file_parser, system_control
+from .addons import file_parser, system_control, progress
 from .bard import Bard
 from time import sleep
 
 app_dir = AppDirs(
-    "smartwa",
     "gpt-cli",
+    "smartwa",
 ).user_data_dir
 
 first_time_run = False
@@ -377,10 +384,12 @@ class gpt3_interactor:
             for data in chatbot.ask_stream(
                 args.message, args.temperature, user=args.role
             ):
+                progress.stop_spinning()
                 print(data, end="", flush=True)
                 rp = "".join([rp, data])
         else:
             rp = chatbot.ask(args.message, user=args.role)
+            progress.stop_spinning()
             self.out(rp)
         return rp
 
@@ -388,10 +397,12 @@ class gpt3_interactor:
         """Utilises GPTv4"""
         if not args.disable_stream:
             for data in chatbot.ask_stream(args.message, role=args.role):
+                progress.stop_spinning()
                 print(data, end="", flush=True)
                 rp = "".join([rp, data])
         else:
             rp = chatbot.ask(args.message, role=args.role)
+            progress.stop_spinning()
             self.out(rp)
         return rp
 
@@ -569,11 +580,11 @@ class main_gpt(cmd.Cmd):
     bcolor_dict = config_handler.bcolor_dict
     interactive = local_interactor()
     parser = lambda self, line: file_parser(line).parse()
-    if any([args.bkey,args.bkey_path,args.bcookie_file]):
+    if any([args.bkey, args.bkey_path, args.bcookie_file, environ.get("BARD_SESSION")]):
         bard = Bard(args)
     elif args.bard:
         exit(logging.critical("Bard's cookie file is required"))
-    elif not any([args.dump,args.update]):
+    elif not any([args.dump, args.update]):
         logging.warning("Cannot use Bard, since cookie file is missing.")
 
     def apply_color(self):
@@ -601,6 +612,7 @@ class main_gpt(cmd.Cmd):
         if raw[0:2] == "./":
             system((raw[2:]).strip())
         else:
+            progress.display_bar(args)
             if "--system" in raw:
                 run_against_system = True
                 raw = raw.replace("--system", "")
@@ -618,6 +630,7 @@ class main_gpt(cmd.Cmd):
                     system_control(feedback).execute(args.sudo)
 
             else:
+                progress.querying = False
                 logging.error(str(rp[1]))
             print(Fore.RESET)
         self.do__prompt(self.prompt_disp)
@@ -628,6 +641,7 @@ class main_gpt(cmd.Cmd):
 
     def do_bard(self, line, return_fb=False, chat=False):
         """Interact with Google's bard"""
+        progress.display_bar(args)
         if "--gpt4" in line:
             return self.default(line.replace("--gpt4", ""), no_check=True)
 
@@ -639,11 +653,13 @@ class main_gpt(cmd.Cmd):
         if args.disable_stream:
             inf, info = self.bard.chat(line, False), ""
             for value in inf:
+                progress.stop_spinning()
                 info = info + value
             gpt3.out(info)
         else:
             info = ""
             for val in self.bard.chat(line):
+                progress.stop_spinning()
                 print(val, end="", flush=True)
                 info = info + val
         if not chat:
@@ -760,6 +776,7 @@ class main_gpt(cmd.Cmd):
         self.do__prompt(self.prompt_disp)
 
     def do__prompt(self, line):
+        progress.querying = False
         line = self.parser(line)
         if not line:
             return
@@ -971,8 +988,10 @@ def main():
                 run.default(prompt)
         run.cmdloop()
     except (KeyboardInterrupt, EOFError):
+        progress.querying = False
         exit(logging.info("Stopping program"))
     except Exception as e:
+        progress.querying = False
         # logging.exception(e)
         logging.error(getExc(e))
 

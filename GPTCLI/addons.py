@@ -2,6 +2,7 @@ import re
 from os import remove, system
 from time import sleep
 from . import logging, getExc
+from threading import Thread as thr
 
 
 class file_parser:
@@ -108,6 +109,41 @@ class system_control:
             remove(self.file_name)
         except Exception as e:
             logging.error(getExc(e))
+
+
+class progress:
+    querying = None
+    __spinner = (("-", "\\", "|", "/"), ("█■■■■", "■█■■■", "■■█■■", "■■■█■", "■■■■█"))
+    sleep_time = 0.1
+
+    @classmethod
+    def __action(cls, index):
+        while cls.querying:
+            for spin in cls.__spinner[index]:
+                print(" " + spin, end="\r", flush=True)
+                if not cls.querying:
+                    break
+                sleep(cls.sleep_time)
+
+    @classmethod
+    def display_bar(cls, args):
+        try:
+            cls.querying = True
+            t1 = thr(
+                target=cls.__action,
+                args=(args.spinner - 1,),
+            )
+            t1.start()
+        except Exception as e:
+            cls.querying = False
+            logging.debug(getExc(e))
+
+    @classmethod
+    def stop_spinning(cls):
+        """Stop displaying busy-bar"""
+        if cls.querying:
+            cls.querying = False
+            sleep(cls.sleep_time)
 
 
 if __name__ == "__main__":

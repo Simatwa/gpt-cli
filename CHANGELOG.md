@@ -23,3 +23,5 @@
 ## v1.5.3
 
 - Bard is optional
+- Busy bar
+- Appdir - `gpt-cli`

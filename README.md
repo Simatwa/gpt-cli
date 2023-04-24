@@ -207,7 +207,7 @@ For more info run `gpt-cli -h`.
 </summary>
 
 ```
-╭─────────────────────────────── gpt-cli v1.4.9 ───────────────────────────────╮
+╭─────────────────────────────── gpt-cli v1.5.3 ───────────────────────────────╮
 │                                                                              │
 │             Repo : https://github.com/Simatwa/gpt-cli                        │
 │             By   : Smartwa Caleb                                             │
@@ -220,12 +220,12 @@ usage: gpt-cli [-h] [-v] [-m gpt-3.5-turbo|gpt-4|gpt-4-32k] [-t [0.1-1]]
                [-tm value] [-pr PROXY] [-rc value] [-g 1,4] [-sp [text ...]]
                [-fp path] [-o path] [-pp prefix] [-rp prefix]
                [-dm keys|values|show|{fnm}] [-dl symbol] [-cf path] [-bk KEY]
-               [-bkp PATH] [-bcf PATH] [-si TIME] [--disable-stream]
-               [--new-record] [--disable-recording] [--zero-show] [--bard]
-               [--markdown] [--update] [--sudo]
+               [-bkp PATH] [-bcf PATH] [-si TIME] [-spin 1|2]
+               [--disable-stream] [--new-record] [--disable-recording]
+               [--zero-show] [--bard] [--markdown] [--update] [--sudo]
                [message ...]
 
-Interact with ChatGPT at the terminal
+Interact with ChatGPT and Bard at the terminal.
 
 positional arguments:
   message               Message to be send.
@@ -295,6 +295,8 @@ options:
                         Path to Bard's cookie file
   -si TIME, --stream-interval TIME
                         Interval for printing responses in (s)
+  -spin 1|2, --spinner 1|2
+                        Busy bar indicator
   --disable-stream      Specifies not to stream responses from ChatGPT
   --new-record          Override previous chats under the filepath
   --disable-recording   Disable saving prompts and responses
@@ -336,7 +338,7 @@ As a `terminal guy` I used to find it uncomfortable to keep shifting from one wi
 
 - [x] Use dialogue
 - [x] Issue prompt from a file
-- [ ] Busy bar
+- [x] Busy bar
 
   > Review [CHANGELOG](https://github.com/Simatwa/gpt-cli/blob/main/CHANGELOG.md)
 

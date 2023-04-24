@@ -1,5 +1,5 @@
 from Bard import Chatbot
-from . import logging, error_handler,getExc
+from . import logging, error_handler, getExc
 from sys import exit
 from os import environ
 from json import load
