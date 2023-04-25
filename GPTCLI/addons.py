@@ -194,8 +194,6 @@ class prompts_to_pdf:
         for key,value in self.contents.items():
             key =f'{x}. {key}'
             value = f'  {value}'
-            if x==200:
-                break
             self.pdf.set_text_color(0,0,255)
             self.pdf.set_font("Arial", size=14)
             text_width = self.pdf.get_string_width(key)
@@ -221,6 +219,7 @@ class prompts_to_pdf:
         self.pdf.set_x((210 - self.pdf.get_string_width(__repo__)) / 2)
         self.pdf.cell(0,10,__repo__)
         self.pdf.output('all-acts.pdf')
+        logging.info("Contents saved to 'all-acts.pdf'")
 
 if __name__ == "__main__":
     st = file_parser("I want you to debug this python code {f.test.py}")
