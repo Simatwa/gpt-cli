@@ -1,7 +1,7 @@
 import re
 from os import remove, system
 from time import sleep
-from . import logging, getExc,__repo__,__author__,error_handler
+from . import logging, getExc, __repo__, __author__, error_handler
 from threading import Thread as thr
 from sys import exit
 from fpdf import FPDF
@@ -148,78 +148,87 @@ class progress:
         if cls.querying:
             cls.querying = False
             sleep(cls.sleep_time)
-    
+
     @classmethod
     def run(cls):
-        """Handles GPT querying functions
-        """
+        """Handles GPT querying functions"""
+
         def decorator(func):
-            def main(*args,**kwargs):
+            def main(*args, **kwargs):
                 try:
-                    return func(*args,**kwargs)
+                    return func(*args, **kwargs)
                 except KeyboardInterrupt:
                     cls.stop_spinning()
-                    return 
+                    return
                 except EOFError:
                     cls.querying = False
                     exit(logging.info("Stopping program"))
                 except Exception as e:
                     cls.stop_spinning()
                     logging.error(getExc(e))
+
             return main
+
         return decorator
+
 
 class prompts_to_pdf:
     def __init__(self):
         self.contents = self.get_contents()
-        self.pdf=FPDF()
+        self.pdf = FPDF()
         self.pdf.add_page()
-    
+
     @error_handler()
     def get_contents(self):
-        resp = requests.get(__repo__+"/raw/main/assets/all-acts.json")
+        resp = requests.get(__repo__ + "/raw/main/assets/all-acts.json", timeout=15)
         if resp.ok:
             return loads(resp.text)
-        raise Exception('Prompts NOT found in path.')
+        raise Exception("Prompts NOT found in path.")
 
     @error_handler()
     def main(self) -> None:
         if not self.contents:
-            return 
-        x=1
-        self.pdf.set_text_color(255,0,0)
+            return
+        x = 1
+        self.pdf.set_text_color(255, 0, 0)
         self.pdf.set_font("Helvetica", size=18)
-        self.pdf.cell(0,10,"Prompts for ChatGPT and Bard",align='C',)
+        self.pdf.cell(
+            0,
+            10,
+            "Prompts for ChatGPT and Bard",
+            align="C",
+        )
         self.pdf.ln()
-        for key,value in self.contents.items():
-            key =f'{x}. {key}'
-            value = f'  {value}'
-            self.pdf.set_text_color(0,0,255)
+        for key, value in self.contents.items():
+            key = f"{x}. {key}"
+            value = f"  {value}"
+            self.pdf.set_text_color(0, 0, 255)
             self.pdf.set_font("Arial", size=14)
             text_width = self.pdf.get_string_width(key)
             self.pdf.set_x((210 - text_width) / 2)
             self.pdf.cell(0, 10, key)
-            self.pdf.cell(0,10,'')
+            self.pdf.cell(0, 10, "")
             self.pdf.ln()
             self.pdf.set_x(0)
             self.pdf.set_font("Courier", size=12)
             self.pdf.set_text_color(0, 0, 128)
-            self.pdf.multi_cell(0, 10,value.encode('utf-8').decode('latin-1'))
-            x+=1
+            self.pdf.multi_cell(0, 10, value.encode("utf-8").decode("latin-1"))
+            x += 1
         self.pdf.ln()
         self.pdf.set_author(__author__)
-        self.pdf.set_text_color(255,0,0)
-        msg="Click here to visit project's official repo."
+        self.pdf.set_text_color(255, 0, 0)
+        msg = "Click here to visit project's official repo."
         self.pdf.set_x((210 - self.pdf.get_string_width(msg)) / 2)
         self.pdf.add_link()
         self.pdf.cell(0, 10, msg, link=__repo__)
 
         self.pdf.ln()
-        self.pdf.set_text_color(0,0,0)
+        self.pdf.set_text_color(0, 0, 0)
         self.pdf.set_x((210 - self.pdf.get_string_width(__repo__)) / 2)
-        self.pdf.cell(0,10,__repo__)
-        self.pdf.output('all-acts.pdf')
+        self.pdf.cell(0, 10, __repo__)
+        self.pdf.output("all-acts.pdf")
         logging.info("Contents saved to 'all-acts.pdf'")
+
 
 if __name__ == "__main__":
     st = file_parser("I want you to debug this python code {f.test.py}")

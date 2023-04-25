@@ -474,7 +474,7 @@ class intro_prompt_handler:
             logging.info("Updating acts and prompts")
 
             for key, value in self.links.items():
-                resp = get(value)
+                resp = get(value, timeout=15)
                 if resp.status_code == 200:
                     with open(path.join(app_dir, key), "w", encoding="utf-8") as fh:
                         fh.write(resp.text)
@@ -527,10 +527,11 @@ class intro_prompt_handler:
                         end="\n\n",
                     )
                     x += 1
-            elif args.dump in ('pdf'):
+            elif args.dump in ("pdf"):
                 from .addons import prompts_to_pdf
+
                 prompts_to_pdf().main()
-                
+
             else:
                 with open(args.dump, "w", encoding="utf-8") as fh:
                     from json import dumps
@@ -605,7 +606,7 @@ class main_gpt(cmd.Cmd):
             if prompt.startswith("I'm sorry"):
                 resp = False
         return resp
-    
+
     @progress.run()
     def default(self, raw, return_fb=False, no_check=False):
         raw = self.parser(raw)
