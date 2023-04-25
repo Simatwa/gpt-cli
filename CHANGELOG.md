@@ -34,3 +34,4 @@
 ## v1.5.5
 
 - Prompt ID name  - `GPT-CLI`
+- Auto-generate prompts - pdf

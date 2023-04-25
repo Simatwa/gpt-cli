@@ -527,6 +527,10 @@ class intro_prompt_handler:
                         end="\n\n",
                     )
                     x += 1
+            elif args.dump in ('pdf'):
+                from .addons import prompts_to_pdf
+                prompts_to_pdf().main()
+                
             else:
                 with open(args.dump, "w", encoding="utf-8") as fh:
                     from json import dumps
