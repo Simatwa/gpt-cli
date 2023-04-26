@@ -12,11 +12,18 @@ setup(
     description=__info__,
     url=__repo__,
     project_urls={"Bug Report": f"{__repo__}/issues/new"},
-    package_data={
-        '': ['requirements.txt','docs/*'],
-    },
-    install_requires=open('requirements.txt').readlines(),
-    long_description=open("docs/README.md").read(),
+    install_requires=[
+        "numpy>=1.23.4",
+        "colorama>=0.4.6",
+        "openai>=0.26.4",
+        "revChatGPT==4.0.6",
+        "appdirs>=1.4.4",
+        "requests>=2.28.2",
+        "tabulate>=0.9.0",
+        "GoogleBard==0.0.7",
+        "fpdf==1.7.2",
+    ],
+    long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     classifiers=[
         "License :: OSI Approved :: MIT License",
