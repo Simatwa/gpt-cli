@@ -15,13 +15,6 @@ CLI tool for interacting with [ChatGPT](https://openai.com) and [Bard](https://b
 
 ![screenshot](https://github.com/Simatwa/gpt-cli/raw/main/assets/Screenshot1.png)
 
-## [Independencies](requirements.txt)
-
-* [Openai](https://github.com/openai/openai-python)
-* [Numpy](https://github.com/numpy/numpy)
-* [Colorama](https://github.com/tartley/colorama)
-* [revChatGPT](https://github.com/acheong08/ChatGPT)
-
 ### Features
 
 - Chat with ChatGPT and Bard conversationally.
@@ -46,26 +39,27 @@ CLI tool for interacting with [ChatGPT](https://openai.com) and [Bard](https://b
 Either of the following ways will get you ready.
 
 1. Using pip
+
 - From pypi
 
 ```sh
-$ sudo pip install chatgpt4-cli
+sudo pip install chatgpt4-cli
 ```
 
 - Installing from source
- 
- ```sh
- $ sudo pip install git+https://github.com/Simatwa/gpt-cli.git
+
+```sh
+ sudo pip install git+https://github.com/Simatwa/gpt-cli.git
  ```
 
 2. Cloning locally and install
 
 ```sh
-$ git clone https://github.com/Simatwa/gpt-cli.git
-$ cd gpt-cli
-$ sudo python3 setup.py install
+git clone https://github.com/Simatwa/gpt-cli.git
+cd gpt-cli
+sudo python3 setup.py install
  #or
-$ python3 setup.py install
+python3 setup.py install
 ```
 
 ## Usage 
@@ -313,7 +307,7 @@ options:
 
 > **Note** : **gpt-4** *(model)* supports upto *7000* tokens and others *3000*.
 
-> **Warning** : **gpt-1**  Has issues - *(To be fixed later)*
+> `$ gpt-cli --dump pdf` will generate `all-acts.pdf` file containing latest acts and prompts as shown [here](https://chatgpt-prompts.tiiny.site). 
 
 Visit [acheong08/Bard](https://github.com/acheong08/Bard) for info on how to get the Bard's cookie file and Sessions.
 
@@ -339,8 +333,9 @@ As a `terminal guy` I used to find it uncomfortable to keep shifting from one wi
 - [x] Use dialogue
 - [x] Issue prompt from a file
 - [x] Busy bar
+- [ ] Add prompts to the [prompts.csv](https://github.com/Simatwa/gpt-cli/edit/main/assets/prompts.csv)
 
-  > Review [CHANGELOG](https://github.com/Simatwa/gpt-cli/blob/main/CHANGELOG.md)
+  > Review [CHANGELOG](https://github.com/Simatwa/gpt-cli/blob/main/docs/CHANGELOG.md)
 
 ## Acknowledgements
 

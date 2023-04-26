@@ -3,8 +3,6 @@ from . import __version__, __repo__
 from os import getlogin
 
 help = f"""
-   gpt-cli {__version__}
- Repo : {__repo__}
 
 ╒═══════╤═══════════════════╤═════════════════════════════════════════════╕
 │   No. │ Command           │ Action                                      │
@@ -23,7 +21,7 @@ help = f"""
 ├───────┼───────────────────┼─────────────────────────────────────────────┤
 │     6 │ _prompt           │ Modify terminal prompt                      │
 ├───────┼───────────────────┼─────────────────────────────────────────────┤
-│     7 │ _save             │ Save current configurations to `.json` file │
+│     7 │ _save             │ Save current configurations to '.json' file │
 ├───────┼───────────────────┼─────────────────────────────────────────────┤
 │     8 │ _load             │ Load configurations from file               │
 ├───────┼───────────────────┼─────────────────────────────────────────────┤
@@ -36,51 +34,51 @@ help = f"""
 │    12 │ {{Any Other}}       │ Chat with ChatGPT                           │
 ╘═══════╧═══════════════════╧═════════════════════════════════════════════╛
 
-1.  img : Text-to-Image converter - (EXPERIMENTAL)
-    e.g 'img Toddler cartoon coding in Python'
+1.  `img` : Text-to-Image converter - *(EXPERIMENTAL)*
+    e.g *img Toddler cartoon coding in Python*
 
-2.  txt2img : Generate image based on GPT description
-    e.g 'txt2img Describe phenotype anatomy of ancient dinosaurs'
+2.  `txt2img` : Generate image based on GPT description
+    e.g *txt2img Describe phenotype anatomy of ancient dinosaurs*
 
-3. _font_color : modifies font-color
-    e.g 'font_color input red'
+3. `_font_color` : modifies font-color
+    e.g *font_color input red*
 
-4. _background_color : modifies background_color
-    e.g 'background_color cyan'
+4. `_background_color` : modifies background_color
+    e.g *background_color cyan*
 
-5. _prompt : Modify CMD prompt
-    e.g '_prompt ┌─[{getlogin().capitalize()}@ChatGPT4]─(%H:%M:%S)
+5. `_prompt` : Modify CMD prompt
+    e.g *_prompt ┌─[{getlogin().capitalize()}@ChatGPT4]─(%H:%M:%S)*
 
-6. _load : Load configurations from the json file
-    e.g '_load DAN.json'
+6. `_load` : Load configurations from the json file
+    e.g *_load DAN.json*
 
-7. _save : Save the current Chat Configurations
-    e.g '_load DAN.json'
+7. `_save` : Save the current Chat Configurations
+    e.g *_load DAN.json*
 
-8. _rollback : Rollback the Chat by  {{n}} time(s)
-    e.g '_rollback 2'
+8. `_rollback` : Rollback the Chat by  {{n}} time(s)
+    e.g *_rollback 2*
 
-9. _reset : Reset current chat and start new
-    e.g '_reset Chat as if you are a 10 year old child'
+9. `_reset` : Reset current chat and start new
+    e.g *_reset Chat as if you are a 10 year old child*
 
-11. bard : Specifies to use bard GPT
-    e.g bard Explain the composite concept in business.
+11. `bard` : Specifies to use bard GPT
+    e.g *bard Explain the composite concept in business.*
 
-12. gpt4 : Specifies to use ChatGPT in case `--bard` was made default
-    e.g gpt4 How do you make?
+12. `gpt4` : Specifies to use ChatGPT in case `--bard` was made default
+    e.g *gpt4 How do you make?*
 
-13. _help : Show this help info
+13. `_help` : Show this help info
 
 * You can further specify the GPT to be used by appending `--gpt4` or `--bard` in the prompt.
 
-* Use `_botchat` to let the 2 GPTs chat to each other
+* Use **_botchat** to let the 2 GPTs chat to each other
 
 * Use double `./` (fullstop and foward slash) to interact with system commands
-      e.g './ifconfig'
+      e.g *./ifconfig*
       
-* Use {{f.text-filename}} to issue prompt contained in  the 'text-filename'
+* Use `{{f.text-filename}}` to issue prompt contained in  the 'text-filename'
 
 * Use `CTRL+C` to cancel a request 
 
-* _exit or `CTRL+C` or `CTRL+Z` : Quits the program.
+* **_exit** or `CTRL+C` or `CTRL+Z` : Quits the program.
         """

@@ -464,7 +464,7 @@ class intro_prompt_handler:
         self.fnm = filename
         self.links = {
             "prompts": "https://raw.githubusercontent.com/f/awesome-chatgpt-prompts/main/prompts.csv",
-            "prompts1": "https://raw.githubusercontent.com/Simatwa/gpt-cli/main/prompts.csv",
+            "prompts1": "https://raw.githubusercontent.com/Simatwa/gpt-cli/main/assets/prompts.csv",
         }
 
     def update(self) -> list:
@@ -809,73 +809,63 @@ class main_gpt(cmd.Cmd):
         else:
             self.apply_color()
         self.do__prompt(self.prompt_disp)
-
+    
+    @error_handler()
     def do__background_color(self, line):
         """Sets background-color"""
-
-        try:
-            self.bcolor_dict[line.lower()]
-            args.background_color = line.lower()
-            self.apply_color()
-        except Exception as e:
-            logging.exception(e)
+        self.bcolor_dict[line.lower()]
+        args.background_color = line.lower()
+        self.apply_color()
         self.do__prompt(self.prompt_disp)
-
+    
+    @error_handler()
     def do__save(self, line):
-        try:
-            if gpt4:
-                all = (
-                    "engine",
-                    "session",
-                    "api_key",
-                    "system_prompt",
-                    "max_tokens",
-                    "temperature",
-                    "top_p",
-                    "presence_penalty",
-                    "frequency_penalty",
-                    "reply_count",
+        if gpt4:
+            all = (
+                "engine",
+                "session",
+                "api_key",
+                "system_prompt",
+                "max_tokens",
+                "temperature",
+                "top_p",
+                "presence_penalty",
+                "frequency_penalty",
+                "reply_count",
                 )
-                chatbot.save(join_list(line), *all)
-            else:
-                chatbot.save_conversation(join_list(line))
-        except Exception as e:
-            logging.error(getExc(e))
+            chatbot.save(join_list(line), *all)
+        else:
+            chatbot.save_conversation(join_list(line))
         self.do__prompt(self.prompt_disp)
-
+    
+    @error_handler()
     def do__load(self, line):
-        try:
-            if gpt4:
-                chatbot.load(join_list(line))
-            else:
-                chatbot.load_conversation(join_list(line))
-        except Exception as e:
-            logging.error(getExc(e))
-            # logging.exception(e)
+        if gpt4:
+            chatbot.load(join_list(line))
+        else:
+            chatbot.load_conversation(join_list(line))
         self.do__prompt(self.prompt_disp)
-
+    
+    @error_handler()
     def do__rollback(self, line):
-        try:
-            if line.isdigit():
-                chatbot.rollback(int(line))
-        except Exception as e:
-            logging.error(getExc(e))
+        if line.isdigit():
+            chatbot.rollback(int(line))
         self.do__prompt(self.prompt_disp)
-
+    
+    @error_handler()
     def do__reset(self, line):
-        try:
-            if gpt4:
-                chatbot.reset(system_prompt=args.system_prompt)
-            else:
-                chatbot.reset()
-        except Exception as e:
-            logging.error(getExc(e))
+        if gpt4:
+            chatbot.reset(system_prompt=args.system_prompt)
+        else:
+            chatbot.reset()
         self.do__prompt(self.prompt_disp)
 
     def do__help(self, line):
         from .helper import help
 
-        print(help)
+        rich_print(
+            Panel(Markdown(help),title='Help Info')
+            )
         self.do__prompt(self.prompt_disp)
 
     def do__exit(self, line):

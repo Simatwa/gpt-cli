@@ -35,3 +35,5 @@
 
 - Prompt ID name  - `GPT-CLI`
 - Auto-generate prompts - pdf
+- [Prompts.csv](/assets/prompts.csv) file moved to [assets](/assets)
+- Help info rendered in Markdown
