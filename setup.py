@@ -13,8 +13,7 @@ setup(
     url=__repo__,
     project_urls={"Bug Report": f"{__repo__}/issues/new"},
     package_data={
-        'docs': ['docs/*'],
-        '':['requirements.txt'],
+        '': ['requirements.txt','docs/*'],
     },
     install_requires=open('requirements.txt').readlines(),
     long_description=open("docs/README.md").read(),
