@@ -37,3 +37,8 @@
 - Auto-generate prompts - pdf
 - [Prompts.csv](/assets/prompts.csv) file moved to [assets](/assets)
 - Help info rendered in Markdown
+
+## v1.5.6
+
+- [all-acts.pdf](/assets/all-acts.pdf) index starts from 0.
+- Auto-append timestamp to `pdf`.

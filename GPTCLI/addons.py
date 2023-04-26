@@ -7,6 +7,7 @@ from sys import exit
 from fpdf import FPDF
 from json import loads
 import requests
+from datetime import datetime
 
 
 class file_parser:
@@ -189,7 +190,7 @@ class prompts_to_pdf:
     def main(self) -> None:
         if not self.contents:
             return
-        x = 1
+        x = 0
         self.pdf.set_text_color(255, 0, 0)
         self.pdf.set_font("Helvetica", size=18)
         self.pdf.cell(
@@ -226,6 +227,11 @@ class prompts_to_pdf:
         self.pdf.set_text_color(0, 0, 0)
         self.pdf.set_x((210 - self.pdf.get_string_width(__repo__)) / 2)
         self.pdf.cell(0, 10, __repo__)
+        self.pdf.ln()
+        self.pdf.set_font('Symbol',size=8)
+        time_stamp = f'Lastly auto-edited : {datetime.today().strftime("%d-%b-%Y %H:%M:%S %s")}'
+        self.pdf.set_x((210 - self.pdf.get_string_width(time_stamp)) / 2)
+        self.pdf.cell(0,10,time_stamp)
         self.pdf.output("all-acts.pdf")
         logging.info("Contents saved to 'all-acts.pdf'")
 
