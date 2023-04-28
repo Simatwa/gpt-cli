@@ -56,3 +56,8 @@ class Bard:
         else:
             for val in resp:
                 yield val
+
+    def reset(self):
+        self.active_link.conversation_id = ""
+        self.active_link.response_id = ""
+        self.active_link.choice_id = ""

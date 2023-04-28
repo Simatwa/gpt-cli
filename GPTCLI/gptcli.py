@@ -854,10 +854,16 @@ class main_gpt(cmd.Cmd):
     
     @error_handler()
     def do__reset(self, line):
-        if gpt4:
-            chatbot.reset(system_prompt=args.system_prompt)
+        if any([args.bard,'--bard' in line]) and not '--gpt4' in line:
+            self.bard.reset()
+            chat_gpt = 'Bard'
         else:
-            chatbot.reset()
+            if gpt4:
+                chatbot.reset(system_prompt=args.system_prompt)
+            else:
+                chatbot.reset()
+            chat_gpt = 'Bard'
+        logging.info(f'Chat reset successfully - {chat_gpt}')
         self.do__prompt(self.prompt_disp)
 
     def do__help(self, line):
