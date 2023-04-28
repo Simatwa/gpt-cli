@@ -16,7 +16,7 @@ setup(
         "numpy>=1.23.4",
         "colorama>=0.4.6",
         "openai>=0.26.4",
-        "revChatGPT==4.0.6",
+        "revChatGPT==5.0.0",
         "appdirs>=1.4.4",
         "requests>=2.28.2",
         "tabulate>=0.9.0",
