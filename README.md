@@ -344,3 +344,5 @@ As a `terminal guy` I used to find it uncomfortable to keep shifting from one wi
 2. [acheong08](https://github.com/acheong08/ChatGPT)
 
 3. [f](https://github.com/f/awesome-chatgpt-prompts)
+
+> **Note** Consider supporting this project by purchasing [Prompts for ChatGPT and Bard](https://payhip.com/b/zxQM0) ebook.
