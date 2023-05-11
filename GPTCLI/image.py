@@ -17,7 +17,8 @@ class imager:
         resolutions = ["256x256", "512x512", "1024x1024"]
         dir = path.join(path.expanduser("~"), "Downloads/GPT")
         parser = argparse.ArgumentParser(
-            description="Text-to-Image Converter - ChatGPT"
+            description="Text-to-Image Converter - ChatGPT",
+            exit_on_error=False,
         )
         parser.add_argument("prompt", help="Description of the image", nargs="*")
         parser.add_argument(
