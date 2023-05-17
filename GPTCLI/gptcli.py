@@ -862,7 +862,7 @@ class main_gpt(cmd.Cmd):
                 chatbot.reset(system_prompt=args.system_prompt)
             else:
                 chatbot.reset()
-            chat_gpt = 'Bard'
+            chat_gpt = 'GPT'
         logging.info(f'Chat reset successfully - {chat_gpt}')
         self.do__prompt(self.prompt_disp)
 
