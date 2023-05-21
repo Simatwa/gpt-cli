@@ -7,3 +7,4 @@
 *__pycache__
 *chatgpt4_cli.egg-info
 *.vscode
+#*.chatgpt-history.txt
