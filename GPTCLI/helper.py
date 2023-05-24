@@ -71,7 +71,7 @@ help = f"""
 
 * You can further specify the GPT to be used by appending `--gpt4` or `--bard` in the prompt.
 
-* Use **_botchat** to let the 2 GPTs chat to each other
+* Use `_botchat` to let the 2 GPTs chat to each other
 
 * Use double `./` (fullstop and foward slash) to interact with system commands
       e.g *./ifconfig*
@@ -80,5 +80,5 @@ help = f"""
 
 * Use `CTRL+C` to cancel a request 
 
-* **_exit** or `CTRL+C` or `CTRL+Z` : Quits the program.
+* `_exit` or `CTRL+C` or `CTRL+Z` : Quits the program.
         """

@@ -995,7 +995,6 @@ def main():
         exit(logging.info("Stopping program"))
     except Exception as e:
         progress.querying = False
-        # logging.exception(e)
         logging.error(getExc(e))
 
 

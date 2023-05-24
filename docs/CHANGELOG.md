@@ -42,3 +42,9 @@
 
 - [all-acts.pdf](/assets/all-acts.pdf) index starts from 0.
 - Auto-append timestamp to `pdf`.
+
+
+## v1.5.7
+
+- Googlebard==1.0.3
+- Other minor updates
