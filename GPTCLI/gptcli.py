@@ -1,7 +1,8 @@
 #!/usr/bin/python
 from . import __version__, __author__, __repo__, __info__
 from colorama import Fore, Back
-from os import getlogin, getcwd, path
+from os import getcwd, path
+from getpass import getuser
 from rich.console import Console
 from rich.panel import Panel
 from rich.style import Style
@@ -176,7 +177,7 @@ class config_handler:
         parser.add_argument(
             "--prompt",
             help="Customizes the prompt display",
-            default=f"┌─[{getlogin().capitalize()}@GPT-CLI]─(%H:%M:%S)",
+            default=f"┌─[{getuser().capitalize()}@GPT-CLI]─(%H:%M:%S)",
             dest="settings",
             nargs="*",
         )
