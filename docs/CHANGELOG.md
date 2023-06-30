@@ -48,3 +48,7 @@
 
 - Googlebard==1.0.3
 - Other minor updates
+
+## v1.5.8
+
+- Bard request error fixed
