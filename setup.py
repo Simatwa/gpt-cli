@@ -1,5 +1,9 @@
 from setuptools import setup
-from GPTCLI import __version__, __author__, __repo__, __info__
+
+__version__ = "1.5.8"
+__author__ = "Smartwa Caleb"
+__repo__ = "https://github.com/Simatwa/gpt-cli"
+__info__ = "Interact with ChatGPT and Bard at the terminal."
 
 setup(
     name="chatgpt4-cli",
@@ -20,7 +24,7 @@ setup(
         "appdirs>=1.4.4",
         "requests>=2.28.2",
         "tabulate>=0.9.0",
-        "GoogleBard==1.0.3",
+        "GoogleBard==1.4.0",
         "fpdf==1.7.2",
     ],
     long_description=open("README.md").read(),
