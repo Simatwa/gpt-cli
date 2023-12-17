@@ -345,4 +345,6 @@ As a `terminal guy` I used to find it uncomfortable to keep shifting from one wi
 
 3. [f](https://github.com/f/awesome-chatgpt-prompts)
 
+You wanna save your bill? Well, purpose to make use of [WebChatGPT](https://github.com/Simatwa/WebChatGPT), which is reverse engineer of ChatGPT web-version.
+
 > **Note** Consider supporting this project by purchasing [Prompts for ChatGPT and Bard](https://payhip.com/b/zxQM0) ebook.
