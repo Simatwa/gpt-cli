@@ -52,3 +52,10 @@
 ## v1.5.8
 
 - Bard request error fixed
+
+## v1.5.9
+
+**What's new?**
+
+- Bug fixed - *low `httpx` logging level* : *bard*
+- Bug fixed - *malfunctioning <kbd>reset</kbd> action* : *bard*

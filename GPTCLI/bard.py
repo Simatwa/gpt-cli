@@ -5,6 +5,7 @@ from os import environ
 from json import load
 from time import sleep
 
+logging.getLogger("httpx").setLevel(logging.ERROR)
 
 class Bard:
     def __init__(self, args: object):

@@ -228,10 +228,12 @@ class prompts_to_pdf:
         self.pdf.set_x((210 - self.pdf.get_string_width(__repo__)) / 2)
         self.pdf.cell(0, 10, __repo__)
         self.pdf.ln()
-        self.pdf.set_font('Symbol',size=8)
-        time_stamp = f'Lastly auto-edited : {datetime.today().strftime("%d-%b-%Y %H:%M:%S %s")}'
+        self.pdf.set_font("Symbol", size=8)
+        time_stamp = (
+            f'Lastly auto-edited : {datetime.today().strftime("%d-%b-%Y %H:%M:%S %s")}'
+        )
         self.pdf.set_x((210 - self.pdf.get_string_width(time_stamp)) / 2)
-        self.pdf.cell(0,10,time_stamp)
+        self.pdf.cell(0, 10, time_stamp)
         self.pdf.output("all-acts.pdf")
         logging.info("Contents saved to 'all-acts.pdf'")
 

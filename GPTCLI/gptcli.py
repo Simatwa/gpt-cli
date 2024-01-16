@@ -810,7 +810,7 @@ class main_gpt(cmd.Cmd):
         else:
             self.apply_color()
         self.do__prompt(self.prompt_disp)
-    
+
     @error_handler()
     def do__background_color(self, line):
         """Sets background-color"""
@@ -818,7 +818,7 @@ class main_gpt(cmd.Cmd):
         args.background_color = line.lower()
         self.apply_color()
         self.do__prompt(self.prompt_disp)
-    
+
     @error_handler()
     def do__save(self, line):
         if gpt4:
@@ -833,12 +833,12 @@ class main_gpt(cmd.Cmd):
                 "presence_penalty",
                 "frequency_penalty",
                 "reply_count",
-                )
+            )
             chatbot.save(join_list(line), *all)
         else:
             chatbot.save_conversation(join_list(line))
         self.do__prompt(self.prompt_disp)
-    
+
     @error_handler()
     def do__load(self, line):
         if gpt4:
@@ -846,33 +846,31 @@ class main_gpt(cmd.Cmd):
         else:
             chatbot.load_conversation(join_list(line))
         self.do__prompt(self.prompt_disp)
-    
+
     @error_handler()
     def do__rollback(self, line):
         if line.isdigit():
             chatbot.rollback(int(line))
         self.do__prompt(self.prompt_disp)
-    
+
     @error_handler()
     def do__reset(self, line):
-        if any([args.bard,'--bard' in line]) and not '--gpt4' in line:
+        if any([args.bard, "--bard" in line]) and not "--gpt4" in line:
             self.bard.reset()
-            chat_gpt = 'Bard'
+            chat_gpt = "Bard"
         else:
             if gpt4:
                 chatbot.reset(system_prompt=args.system_prompt)
             else:
                 chatbot.reset()
-            chat_gpt = 'GPT'
-        logging.info(f'Chat reset successfully - {chat_gpt}')
+            chat_gpt = "GPT"
+        logging.info(f"Chat reset successfully - {chat_gpt}")
         self.do__prompt(self.prompt_disp)
 
     def do__help(self, line):
         from .helper import help
 
-        rich_print(
-            Panel(Markdown(help),title='Help Info')
-            )
+        rich_print(Panel(Markdown(help), title="Help Info"))
         self.do__prompt(self.prompt_disp)
 
     def do__exit(self, line):

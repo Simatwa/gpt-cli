@@ -1,6 +1,6 @@
 from setuptools import setup
 
-__version__ = "1.5.8"
+__version__ = "1.5.9"
 __author__ = "Smartwa Caleb"
 __repo__ = "https://github.com/Simatwa/gpt-cli"
 __info__ = "Interact with ChatGPT and Bard at the terminal."
