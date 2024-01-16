@@ -58,6 +58,6 @@ class Bard:
                 yield val
 
     def reset(self):
-        self.active_link.conversation_id = ""
-        self.active_link.response_id = ""
-        self.active_link.choice_id = ""
+        self.active_link.async_chatbot.conversation_id = ""
+        self.active_link.async_chatbot.response_id = ""
+        self.active_link.async_chatbot.choice_id = ""
